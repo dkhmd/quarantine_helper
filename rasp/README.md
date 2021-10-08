@@ -2,7 +2,7 @@
 T.B.D
 # デバッグ用
 ## emg_serial.py
-Arduinoからシリアル経由でアナログ値を受け取り、プロットするプログラム
+Arduinoからシリアル経由でEMGのアナログ値を受け取り、プロットするプログラム
 ```bash
 python emg_serial.py (sample)
 ```
