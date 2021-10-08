@@ -1,26 +1,38 @@
 import serial
+import sys
 import matplotlib.pyplot as plt
 import numpy as np
 
-SAMPLES = 4096
-FFT_SAMPLES = int(SAMPLES)
+def main():
+    if len(sys.argv) == 1:
+        SAMPLES = 2048
+    elif len(sys.argv) == 2:
+        SAMPLES = int(sys.argv[1])
+    else:
+        print("usage: python emg_serial.py (samples)")
+        exit(0)
 
-fig, ax = plt.subplots()
+    print("SAMPLE = " + str(SAMPLES))
 
-arr = [0] * FFT_SAMPLES
-x = range(0, FFT_SAMPLES)
+    fig, ax = plt.subplots()
 
-ser = serial.Serial('/dev/tty.usbmodem1141301', 115200, timeout=None)
+    arr = [0] * SAMPLES
+    x = range(0, SAMPLES)
 
-while True:
-    for i in range(0, FFT_SAMPLES):
-        val = float(ser.readline().decode().replace('\r', '').replace('\n', ''))
-        arr[i] = val
+    ser = serial.Serial('/dev/tty.usbmodem1141301', 115200, timeout=None)
+    try:
+        while True:
+            for i in range(0, SAMPLES):
+                val = float(ser.readline().decode().replace('\r', '').replace('\n', ''))
+                arr[i] = val
 
-    ax.set_xlim(0, FFT_SAMPLES)
-    ax.set_ylim(400, 1024)
-    line, = ax.plot(x, arr, color='blue')
-    plt.pause(0.1)
-    line.remove()
+            ax.set_xlim(0, SAMPLES)
+            ax.set_ylim(400, 1024)
+            line, = ax.plot(x, arr, color='blue')
+            plt.pause(0.1)
+            line.remove()
+    except:
+        ser.close()
 
-ser.close()
+if __name__ == '__main__':
+    main()
