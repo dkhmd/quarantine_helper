@@ -4,6 +4,6 @@ T.B.D
 ## emg_serial.py
 Arduinoからシリアル経由でアナログ値を受け取り、プロットするプログラム
 ```bash
-python emg_srial.py (sample)
+python emg_serial.py (sample)
 ```
 sample: サンプリング数、省略時は2048
