@@ -1,4 +1,4 @@
-#include <ArduinoBLE.h>
+#include "ble.h"
 
 BLEService emgService("19B10000-E8F2-537E-4F6C-D104768A1214"); // BLE EMG Service
 

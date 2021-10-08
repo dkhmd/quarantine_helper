@@ -1,3 +1,7 @@
+#include "emg.h"
+#include "imu.h"
+#include "ble.h"
+
 void setup() {
   Serial.begin(115200);
   while (!Serial);
@@ -9,7 +13,7 @@ void setup() {
 }
  
 void loop() {
-  loop_emg();
+  loop_emg(A0);
   loop_imu();
 
   loop_ble();
