@@ -2,8 +2,8 @@ import serial
 import matplotlib.pyplot as plt
 import numpy as np
 
-SAMPLES = 512
-FFT_SAMPLES = int(SAMPLES/2)
+SAMPLES = 4096
+FFT_SAMPLES = int(SAMPLES)
 
 fig, ax = plt.subplots()
 
@@ -18,7 +18,7 @@ while True:
         arr[i] = val
 
     ax.set_xlim(0, FFT_SAMPLES)
-    ax.set_ylim(0, 2000)
+    ax.set_ylim(400, 1024)
     line, = ax.plot(x, arr, color='blue')
     plt.pause(0.1)
     line.remove()
