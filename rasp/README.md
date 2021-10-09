@@ -35,7 +35,6 @@ python publish.py --cert certs/certificate.pem.crt --key certs/private.pem.key -
 #### 注意
 証明書などを誤ってコミットしないこと  
 テストする際は証明書などはgit管理下以外、もしくは.gitignoreされているcertsディレクトリ以下に保管した上でテストすること
-```
 
 ## デバッグ用
 ### debug/data_serial.py
