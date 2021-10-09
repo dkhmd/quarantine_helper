@@ -1,7 +1,6 @@
-import serial
 import sys
+import serial
 import matplotlib.pyplot as plt
-import numpy as np
 
 def main():
     if len(sys.argv) == 1:
@@ -9,7 +8,7 @@ def main():
     elif len(sys.argv) == 2:
         SAMPLES = int(sys.argv[1])
     else:
-        print("usage: python emg_serial.py (samples)")
+        print("usage: python data_serial.py (samples)")
         exit(0)
 
     print("SAMPLE = " + str(SAMPLES))

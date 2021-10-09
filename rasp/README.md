@@ -1,12 +1,28 @@
-# 本番運用用
+# Raspberry Pi Zero WH 環境構築方法
 T.B.D
-# デバッグ用
-## emg_serial.py
-Arduinoからシリアル経由でEMGのアナログ値を受け取り、プロットするプログラム
+
+# プログラム
+## 本番運用用
+### gateway.py
+ArduinoからBT経由で動作判定結果と位置情報を受け取り、AWS IoT Coreに送るプログラム  
+ArdunoがCentral、Raspberry PiがPeripheralとして動く  
+T.B.D
+### ライブラリ
+- pybleno
+
+## デバッグ用
+### data_serial.py
+Arduinoからシリアル経由でEMG/IMUのデータを受け取り、プロットするプログラム
+#### ライブラリ
+- serial
+- matplotlib.pyplot
+#### 使い方
 ```bash
-python emg_serial.py (sample)
+python data_serial.py (sample)
 ```
+#### 引数
 sample: サンプリング数、省略時は2048  
+#### 注意
 プログラム内でシリアルデバイス名を直書しているため、デバイス名が異なる場合は以下の箇所を所望のデバイス名に書き換えること
 ```python
 ser = serial.Serial('/dev/tty.usbmodem1141301', 115200, timeout=None)
