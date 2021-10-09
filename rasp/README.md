@@ -33,7 +33,7 @@ python publish.py --cert certs/certificate.pem.crt --key certs/private.pem.key -
 - topic: MQTTのトピック名
 - ep: AWS IoT エンドポイント
 #### 注意
-証明書などを誤ってコミットしないこと  　
+証明書などを誤ってコミットしないこと  
 テストする際は証明書などはgit管理下以外、もしくは.gitignoreされているcertsディレクトリ以下に保管した上でテストすること
 ```
 
