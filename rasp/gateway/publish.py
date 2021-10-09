@@ -54,4 +54,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    publish(endpoint=args.ep, cert=args.cert, key=args.key, root=args.root, data=args.data, topic=args.topic)
+    # open data file(json)
+    with open(args.data) as f:
+        df = json.load(f)
+
+    publish(endpoint=args.ep, cert=args.cert, key=args.key, root=args.root, data=df, topic=args.topic)
