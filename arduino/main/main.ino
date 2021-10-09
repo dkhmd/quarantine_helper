@@ -22,9 +22,11 @@ void setup() {
 }
  
 void loop() {
+  char        buf[256];
+  
   unsigned long microseconds = 0;
-  double      emg = 0;
-  SENSORS_DATA sensors;
+  float         emg = 0;
+  SENSORS_DATA  sensors;
   
   // Sampling
   for(int i=0; i<SAMPLES; i++)
@@ -34,23 +36,10 @@ void loop() {
     emg = read_emg(A0);
     read_imu(&sensors);
 
-    Serial.print("i:");
-    Serial.print(i);    
-    Serial.print(", emg:");
-    Serial.print(emg);
-    Serial.print(", acc_x:");
-    Serial.print(sensors.sensor[SENSOR_KIND_ACC].x);
-    Serial.print(", acc_y:");
-    Serial.print(sensors.sensor[SENSOR_KIND_ACC].y);
-    Serial.print(", acc_z:");
-    Serial.print(sensors.sensor[SENSOR_KIND_ACC].z);
-    Serial.print(", gyro_x:");
-    Serial.print(sensors.sensor[SENSOR_KIND_GYRO].x);
-    Serial.print(", gyro_y:");
-    Serial.print(sensors.sensor[SENSOR_KIND_GYRO].y);
-    Serial.print(", gyro_z:");
-    Serial.print(sensors.sensor[SENSOR_KIND_GYRO].z);
-    Serial.println("");
+    sprintf(buf, "i: %d, emg: %f acc_x:%f, acc_y:%f, acc_z:%f, gyro_x:%f, gyro_y:%f, gyro_z:%f", \
+                  i, emg, sensors.sensor[SENSOR_KIND_ACC].x, sensors.sensor[SENSOR_KIND_ACC].y, sensors.sensor[SENSOR_KIND_ACC].z, \
+                  sensors.sensor[SENSOR_KIND_GYRO].x, sensors.sensor[SENSOR_KIND_GYRO].y, sensors.sensor[SENSOR_KIND_GYRO].z);
+    Serial.println(buf);
 
     while(micros() < (microseconds + sampling_period_us)){
       yield();
