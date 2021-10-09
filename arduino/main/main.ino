@@ -1,6 +1,6 @@
 #include "emg.h"
 #include "imu.h"
-#include "ble.h"
+#include "ble_master.h"
 
 void setup() {
   Serial.begin(115200);
@@ -9,12 +9,14 @@ void setup() {
   setup_emg();
   setup_imu();
 
-  setup_ble();
+  setup_ble_master();
 }
  
 void loop() {
   loop_emg(A0);
   loop_imu();
 
-  loop_ble();
+  loop_ble_master();
+
+  delay(1000);
 }
