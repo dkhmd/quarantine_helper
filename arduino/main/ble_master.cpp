@@ -6,7 +6,7 @@ BLECharacteristic cmdCharacteristic;
 static bool scan_peripheral() {  
   bool ret = false;
   
-  BLE.scanForUuid("354d8340-289e-11ec-a32b-531c9f618227");
+  BLE.scanForUuid(GATEWAY_SERVICE_UUID);
   
   // check if a peripheral has been discovered
   peripheral = BLE.available();
@@ -66,7 +66,7 @@ static bool connect_peripheral()
   }
 
   // retrieve the command characteristic
-  cmdCharacteristic = peripheral.characteristic("354d8343-289e-11ec-a32b-531c9f618227");
+  cmdCharacteristic = peripheral.characteristic(SETTING_CHARACTERISTIC_UUID);
 
   if (!cmdCharacteristic) {
     Serial.println("Peripheral does not have command characteristic!");
@@ -88,6 +88,8 @@ __error:
 static bool write_peripheral() {
   if (peripheral.connect()) {
     Serial.println("write_peripheral");
+
+    //T.B.D
     cmdCharacteristic.writeValue((byte)0x01);
   } else {
     Serial.println("Failed to connect!");

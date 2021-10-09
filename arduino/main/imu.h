@@ -11,14 +11,16 @@ typedef enum {
 } SENSOR_KIND;
 
 typedef struct {
-  public:
-    float x;
-    float y;
-    float z;
+  float       x;
+  float       y;
+  float       z;
 } SENSOR_DATA;
 
+typedef struct {
+  SENSOR_DATA sensor[SENSOR_KIND_MAX];
+} SENSORS_DATA;
 
 void setup_imu();
-SENSOR_DATA *loop_imu();
+void read_imu(SENSORS_DATA *sensors);
 
 #endif
