@@ -1,5 +1,7 @@
 import time
 from pybleno import *
+
+import publish
  
 GATEWAY_SERVICE_UUID = '354d8340-289e-11ec-a32b-531c9f618227'
 SETTING_CHARACTERISTIC_UUID = '354d8343-289e-11ec-a32b-531c9f618227'
@@ -38,6 +40,7 @@ def onAdvertisingStart(error):
  
 def onWriteRequest_set(data, offset, withoutResponse, callback):
     print(str(data))
+    # T.B.D(should call publish.publish module)
  
 if __name__ == '__main__':
     bleno = Bleno()
@@ -46,7 +49,6 @@ if __name__ == '__main__':
     GATEWAYCharacteristic_set = SettingCharacteristic()
     GATEWAYCharacteristic_set.on('writeRequest', onWriteRequest_set)
     bleno.start()
-    counter = 0
  
     while True:
         time.sleep(1)

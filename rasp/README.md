@@ -3,15 +3,20 @@ T.B.D
 
 # プログラム
 ## 本番運用用
-### gateway.py
+### gateway/gateway.py
 ArduinoからBT経由で動作判定結果と位置情報を受け取り、AWS IoT Coreに送るプログラム  
 ArdunoがCentral、Raspberry PiがPeripheralとして動く  
-T.B.D
-### ライブラリ
+#### ライブラリ
 - pybleno
+#### 使い方
+```bash
+sudo python gateway.py
+```
+#### 引数
+なし
 
 ## デバッグ用
-### data_serial.py
+### debug/data_serial.py
 Arduinoからシリアル経由でEMG/IMUのデータを受け取り、プロットするプログラム
 #### ライブラリ
 - serial
