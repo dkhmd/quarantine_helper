@@ -1,7 +1,7 @@
 #ifndef __imu_h__
 #define __imu_h__
 
-#include <ArduinoBLE.h>
+#include <Arduino_LSM9DS1.h>
 
 typedef enum {
   SENSOR_KIND_ACC   = 0,

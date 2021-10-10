@@ -1,5 +1,4 @@
 #include "imu.h"
-#include <Arduino_LSM9DS1.h>
 
 void setup_imu() {
   if (!IMU.begin()) {
