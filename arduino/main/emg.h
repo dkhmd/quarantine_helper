@@ -3,7 +3,7 @@
 
 #include <ArduinoBLE.h>
 
-void setup_emg();
-float read_emg(int port);
+void emg_setup();
+float emg_read(int port);
 
 #endif

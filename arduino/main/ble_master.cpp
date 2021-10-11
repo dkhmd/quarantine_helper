@@ -85,22 +85,7 @@ __error:
   return false;
 }
 
-static bool write_peripheral() {
-  if (peripheral.connect()) {
-    Serial.println("write_peripheral");
-
-    //T.B.D
-    cmdCharacteristic.writeValue((byte)0x01);
-  } else {
-    Serial.println("Failed to connect!");
-    peripheral.disconnect();
-    return false;
-  }
-
-  return true;
-}
-
-void setup_ble_master() {
+void ble_setup() {
   // begin initialization
   if (!BLE.begin()) {
     Serial.println("starting BLE failed!");
@@ -121,6 +106,15 @@ void setup_ble_master() {
   }
 }
 
-void loop_ble_master() {
-  write_peripheral();
+
+bool ble_send(byte* buf, int len) {
+  if (peripheral.connect()) {
+    cmdCharacteristic.writeValue(buf, len);
+  } else {
+    Serial.println("Failed to connect!");
+    peripheral.disconnect();
+    return false;
+  }
+
+  return true;
 }

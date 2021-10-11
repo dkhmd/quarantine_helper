@@ -20,7 +20,7 @@ typedef struct {
   SENSOR_DATA sensor[SENSOR_KIND_MAX];
 } SENSORS_DATA;
 
-void setup_imu();
-void read_imu(SENSORS_DATA *sensors);
+void imu_setup();
+void imu_read(SENSORS_DATA *sensors);
 
 #endif

@@ -1,9 +1,9 @@
 #include "emg.h"
 
-void setup_emg() {
+void emg_setup() {
 }
 
-float read_emg(int port) { 
+float emg_read(int port) { 
   int sensorValue;
   float voltage;
   
