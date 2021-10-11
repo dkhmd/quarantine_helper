@@ -10,7 +10,7 @@
 
 #define SAMPLES             256 //Must be a power of 2
 #define SAMPLING_FREQUENCY  200 //Hz, must be less than 10000 due to ADC
-#define DBG_BUFFER_SIZE     128
+#define DBG_BUFFER_SIZE     256
 #define MAX_BEACON_NUM      8
 
 
@@ -29,13 +29,14 @@ typedef struct __attribute__((packed)) {
 
 
 /*** Variables ***/
+int           grp_counter = 0;
+int           buf_counter = 0;
 SimpleTimer   timer;
-char          dbg_buf[DBG_BUFFER_SIZE];
-int           buf_counter;
 TX_DATA       ble_tx_data;
-
+char          dbg_buf[DBG_BUFFER_SIZE];
 
 static void repeat_task() {
+
   float         emg = 0;
   SENSORS_DATA  sensors;
   unsigned long micros_start = 0;
@@ -56,19 +57,18 @@ static void repeat_task() {
 //  Serial.print("IMU:");
 //  Serial.print(micros() - micros_start);
 
-  sprintf(dbg_buf, "cnt:%d, emg:%f, acc_x:%f, acc_y:%f, acc_z:%f, gyro_x:%f, gyro_y:%f, gyro_z:%f", \
-                buf_counter, emg, sensors.sensor[SENSOR_KIND_ACC].x, sensors.sensor[SENSOR_KIND_ACC].y, sensors.sensor[SENSOR_KIND_ACC].z, \
+  sprintf(dbg_buf, "[DATA]grp:%d, cnt:%d, sample:%d, emg:%f, acc_x:%f, acc_y:%f, acc_z:%f, gyro_x:%f, gyro_y:%f, gyro_z:%f", \
+                grp_counter, buf_counter, SAMPLES, emg, sensors.sensor[SENSOR_KIND_ACC].x, sensors.sensor[SENSOR_KIND_ACC].y, sensors.sensor[SENSOR_KIND_ACC].z, \
                 sensors.sensor[SENSOR_KIND_GYRO].x, sensors.sensor[SENSOR_KIND_GYRO].y, sensors.sensor[SENSOR_KIND_GYRO].z);
   Serial.println(dbg_buf);
 
 //  Serial.println("");
 
   buf_counter++;
-
   //T.B.D
   if(buf_counter >= SAMPLES){
     buf_counter = 0;
-
+    grp_counter++;
 #if 0
     // Inference
     
