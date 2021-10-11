@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 def main():
     if len(sys.argv) == 1:
-        SAMPLES = 2048
+        SAMPLES = 256
     elif len(sys.argv) == 2:
         SAMPLES = int(sys.argv[1])
     else:
