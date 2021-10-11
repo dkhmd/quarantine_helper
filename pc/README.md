@@ -17,4 +17,5 @@ sudo python data_upload.py label (samples)
 - sample: サンプリング数、省略時は256 
 ### 注意
 - 事前に `aws configure` を設定しておくこと
+- /tmp/data.csv に一時ファイルを保存するため、書き込み権限を渡しておくこと
 - プログラム内でシリアルデバイス名を直書しているため、デバイス名が異なる場合はプログラム内の `SERIAL_DEVICE_NAME` を所望のデバイス名に書き換えること
