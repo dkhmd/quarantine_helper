@@ -1,5 +1,10 @@
-# Raspberry Pi Zero 環境構築方法
-T.B.D
+# Raspberry Pi 環境構築方法
+- [OSはraspbianをインストールする](https://qiita.com/tksnkym/items/31a237e27cbc51790cdd)
+- [初期設定をする](https://qiita.com/HeRo/items/c1c30d7267faeb304538)
+- [python をデフォルト3にする](https://www.ingenious.jp/articles/howto/raspberry-pi-howto/python-3-change/)
+
+以降のプログラムに対して、ライブラリはpipコマンドでインストールする  
+例) `pip install pybleno` 
 
 # プログラム
 全てのプログラムはpython3.5以降での実行を前提としている

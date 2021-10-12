@@ -15,6 +15,7 @@ class Plotter():
         self.exit_flag = False
         self.label = label
         self.samples = samples
+        self.tdatetime = dt.now()
 
     def run(self):
         fig, ax = plt.subplots()
@@ -24,10 +25,12 @@ class Plotter():
 
         ser = serial.Serial(SERIAL_DEVICE_NAME, 115200, timeout=None)
 
+        tstr = self.tdatetime.strftime('%Y/%m/%d %H:%M:%S')
         while True:
             while True:
                 line = ser.readline().decode().replace('\r', '').replace('\n', '')
                 if not line.startswith("[DATA]"):
+                    print(line)
                     continue
 
                 # extract emg data
@@ -44,6 +47,7 @@ class Plotter():
                     line = line.lstrip('[DATA]')
                     header_str = re.sub(r'[^a-zA-Z\_\,]', '', line)
                     header_arr = header_str.split(',')
+                    header_arr.insert(0, "dt")
                     header_arr.append("label")
                     with open('/tmp/data.csv', 'w') as f:
                         writer = csv.writer(f)
@@ -52,6 +56,7 @@ class Plotter():
 
                 # write csv row
                 data_arr = re.findall(r'[\d\.]+', line)
+                data_arr.insert(0, tstr)
                 data_arr.append(label)
                 with open('/tmp/data.csv', 'a') as f:
                     writer = csv.writer(f)
@@ -76,10 +81,12 @@ class Plotter():
         s3 = boto3.resource('s3')
         bucket = s3.Bucket('sensor-data-keisuke-nakata')
 
-        tdatetime = dt.now()
-        daystr = tdatetime.strftime('%Y/%m/%d')
-        secstr = tdatetime.strftime('%H-%M-%S')
+        daystr = self.tdatetime.strftime('%Y/%m/%d')
+        secstr = self.tdatetime.strftime('%H-%M-%S')
         key_name = 'sample=' + str(self.samples) + '/label=' + self.label + '/dt=' + daystr + '/' + secstr + '.csv'
+        bucket.upload_file('/tmp/data.csv', key_name)
+
+        key_name = 'sample=' + str(self.samples) + '/label=' + self.label + '/latest/data.csv'
         bucket.upload_file('/tmp/data.csv', key_name)
         print("done")
         ser.close()

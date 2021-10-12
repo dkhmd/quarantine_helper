@@ -5,7 +5,7 @@ import publish
  
 GATEWAY_SERVICE_UUID = '354d8340-289e-11ec-a32b-531c9f618227'
 SETTING_CHARACTERISTIC_UUID = '354d8343-289e-11ec-a32b-531c9f618227'
- 
+
 class SettingCharacteristic(Characteristic):
     def __init__(self):
         Characteristic.__init__(self, {

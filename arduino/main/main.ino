@@ -6,13 +6,14 @@
 
 
 /*** Definition ***/
-//#define __COLLECT_DEBUG_DATA__
+#define __COLLECT_RAW_DATA__    true
 
-#define SAMPLES             256 //Must be a power of 2
-#define SAMPLING_FREQUENCY  200 //Hz, must be less than 10000 due to ADC
-#define DBG_BUFFER_SIZE     256
-#define MAX_BEACON_NUM      8
+#define SAMPLES                 256 //Must be a power of 2
+#define SAMPLING_FREQUENCY      200 //Hz, must be less than 10000 due to ADC
+#define DBG_BUFFER_SIZE         256
+#define MAX_BEACON_NUM          8
 
+#define PORT_BUZZER             9
 
 /*** Structure ***/
 typedef struct __attribute__((packed)) {
@@ -35,6 +36,7 @@ SimpleTimer   timer;
 TX_DATA       ble_tx_data;
 char          dbg_buf[DBG_BUFFER_SIZE];
 
+
 static void repeat_task() {
 
   float         emg = 0;
@@ -45,30 +47,36 @@ static void repeat_task() {
   osThreadSetPriority(osThreadGetId(), osPriorityRealtime);
 
   // EMG Sampling
-//  micros_start = micros();
   emg = emg_read(A0);
-//  Serial.print("EMG:");
-//  Serial.print(micros() - micros_start);
-//  Serial.print(",");
-
   // IMU Sampling
-//  micros_start = micros();
   imu_read(&sensors);
-//  Serial.print("IMU:");
-//  Serial.print(micros() - micros_start);
 
-  sprintf(dbg_buf, "[DATA]grp:%d, cnt:%d, sample:%d, emg:%f, acc_x:%f, acc_y:%f, acc_z:%f, gyro_x:%f, gyro_y:%f, gyro_z:%f", \
-                grp_counter, buf_counter, SAMPLES, emg, sensors.sensor[SENSOR_KIND_ACC].x, sensors.sensor[SENSOR_KIND_ACC].y, sensors.sensor[SENSOR_KIND_ACC].z, \
-                sensors.sensor[SENSOR_KIND_GYRO].x, sensors.sensor[SENSOR_KIND_GYRO].y, sensors.sensor[SENSOR_KIND_GYRO].z);
-  Serial.println(dbg_buf);
+#ifdef __COLLECT_RAW_DATA__
+  if((grp_counter % 4) == 0) {
+      digitalWrite(PORT_BUZZER, LOW);
+  } else if((grp_counter % 4) == 3) {
+      digitalWrite(PORT_BUZZER, HIGH);
+  } else if(buf_counter <= SAMPLES/4) {
+      digitalWrite(PORT_BUZZER, HIGH);
+    } else {
+      digitalWrite(PORT_BUZZER, LOW);
+  }
 
-//  Serial.println("");
+  if((grp_counter % 4) == 0) {
+    // print sensor values
+    sprintf(dbg_buf, "[DATA]grp:%d, cnt:%d, sample:%d, emg:%f, acc_x:%f, acc_y:%f, acc_z:%f, gyro_x:%f, gyro_y:%f, gyro_z:%f", \
+                  grp_counter, buf_counter, SAMPLES, emg, sensors.sensor[SENSOR_KIND_ACC].x, sensors.sensor[SENSOR_KIND_ACC].y, sensors.sensor[SENSOR_KIND_ACC].z, \
+                  sensors.sensor[SENSOR_KIND_GYRO].x, sensors.sensor[SENSOR_KIND_GYRO].y, sensors.sensor[SENSOR_KIND_GYRO].z);
+    Serial.println(dbg_buf);
+  }
+#endif
 
   buf_counter++;
-  //T.B.D
   if(buf_counter >= SAMPLES){
     buf_counter = 0;
     grp_counter++;
+
+    //T.B.D
 #if 0
     // Inference
     
