@@ -1,4 +1,5 @@
 import argparse
+import binascii
 import time
 from datetime import datetime as dt
 from pybleno import *
@@ -40,7 +41,9 @@ def onAdvertisingStart(error):
                     GATEWAYCharacteristic_set
                 ]
             })
-        ]) 
+        ])
+    else:
+        raise Exception('Advertise Error')
 
 def onWriteRequest_set(data, offset, withoutResponse, callback):
     print(len(data), str(data))
@@ -52,9 +55,11 @@ def onWriteRequest_set(data, offset, withoutResponse, callback):
     dict_data['number_of_beacon'] = 0
     dict_data['beaon'] = []
     dict_data['action'] = convAction(data[63])
-
     print(dict_data)
-    publish.publish(endpoint=args.ep, cert=args.cert, key=args.key, root=args.root, data=dict_data, topic=args.topic)
+
+    topic = 'device/' + str(binascii.hexlify(data[0:6]), 'utf-8') + '/data'
+    print(topic)
+    publish.publish(endpoint=args.ep, cert=args.cert, key=args.key, root=args.root, data=dict_data, topic=topic)
 
 def prettify(mac_string):
     return ':'.join('%02x' % b for b in mac_string)
@@ -69,12 +74,11 @@ def convAction(str):
     return action
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='python3 gateway.py cert key root data topic endpoint')
+    parser = argparse.ArgumentParser(description='python3 gateway.py cert key root data endpoint')
 
     parser.add_argument('-c', '--cert', required=True, help='cert file path')
     parser.add_argument('-k', '--key', required=True, help='key file path')
     parser.add_argument('-r', '--root', required=True, help='root file path')
-    parser.add_argument('-t', '--topic', required=True, help='topic name')
     parser.add_argument('-e', '--ep', required=True, help='endpoint')
 
     args = parser.parse_args()

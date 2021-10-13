@@ -22,7 +22,6 @@ sudo python gateway.py --cert certs/certificate.pem.crt --key certs/private.pem.
 - cert: AWS IoT デバイス証明書のファイルパス
 - key: AWS IoT プライベートキーのファイルパス
 - root: AWS IoT ルート CA 証明書のファイルパス
-- topic: MQTTのトピック名
 - ep: AWS IoT エンドポイント
 
 ## publish.py
