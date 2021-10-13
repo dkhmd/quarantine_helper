@@ -11,7 +11,7 @@ PCとArduinoを接続した状態でArduino IDEを立ち上げ、Uploadボタン
 
 # 開発方法
 PCとArduinoを接続した状態でArduino IDEを立ち上げ、File -> Open -> main.ino を選択すると全てのソースコードが展開される。  
-シリアル接続された状態となるため、Tools -> Serial Monitor や Serial Plotter でデバッグ文やプロット図がリアルタイムに確認できる。
+Tools -> Serial Monitor や Serial Plotter でデバッグ文やプロット図がリアルタイムに確認できる。
 
 ## ライブラリ
 T.B.D

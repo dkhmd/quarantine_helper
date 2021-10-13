@@ -13,6 +13,7 @@ ArduinoからBT経由で動作判定結果と位置情報を受け取り、AWS I
 ArdunoがCentral、Raspberry PiがPeripheralとして動く  
 ### ライブラリ
 - pybleno
+- awsiotsdk
 ### 使い方
 ```bash
 sudo python gateway.py --cert certs/certificate.pem.crt --key certs/private.pem.key --root certs/root.pem --topic test/testing --ep endpoint.iot.ap-northeast-1.amazonaws.com

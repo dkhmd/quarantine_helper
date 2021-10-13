@@ -96,7 +96,7 @@ void ble_setup() {
   Serial.print("Local address is: ");
   Serial.println(BLE.address());
   
-  Serial.println("BLE Central scan");
+  Serial.println("BLE central scan");
 
   // wait for peripheral connection
   while(true) {
