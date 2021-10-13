@@ -15,10 +15,14 @@ ArdunoがCentral、Raspberry PiがPeripheralとして動く
 - pybleno
 ### 使い方
 ```bash
-sudo python gateway.py
+sudo python gateway.py --cert certs/certificate.pem.crt --key certs/private.pem.key --root certs/root.pem --topic test/testing --ep endpoint.iot.ap-northeast-1.amazonaws.com
 ```
 ### 引数
-なし
+- cert: AWS IoT デバイス証明書のファイルパス
+- key: AWS IoT プライベートキーのファイルパス
+- root: AWS IoT ルート CA 証明書のファイルパス
+- topic: MQTTのトピック名
+- ep: AWS IoT エンドポイント
 
 ## publish.py
 上記gateway.pyからモジュールとして呼び出されることを想定しており、AWS IoTにデータを送るプログラム  
@@ -39,4 +43,3 @@ python publish.py --cert certs/certificate.pem.crt --key certs/private.pem.key -
 ### 注意
 証明書などを誤ってコミットしないこと  
 テストする際は証明書などはgit管理下以外、もしくは.gitignoreされているcertsディレクトリ以下に保管した上でテストすること
-

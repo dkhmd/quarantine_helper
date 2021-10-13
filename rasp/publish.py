@@ -8,7 +8,7 @@ import time as t
 import json
 
 
-def publish(endpoint, cert, key, root, data, topic):
+def publish(endpoint, cert, key, root, dict_data, topic):
     # Define ENDPOINT, CLIENT_ID, PATH_TO_CERT, PATH_TO_KEY, PATH_TO_ROOT, MESSAGE, TOPIC, and RANGE
     ENDPOINT = endpoint
     CLIENT_ID = "Gateway"
@@ -59,6 +59,6 @@ if __name__ == "__main__":
 
     # open data file(json)
     with open(args.data) as f:
-        df = json.load(f)
+        dict_data = json.load(f)
 
-    publish(endpoint=args.ep, cert=args.cert, key=args.key, root=args.root, data=df, topic=args.topic)
+    publish(endpoint=args.ep, cert=args.cert, key=args.key, root=args.root, dict_data=dict_data, topic=args.topic)

@@ -1,8 +1,12 @@
+import argparse
 import time
+from datetime import datetime as dt
 from pybleno import *
-
 import publish
- 
+
+ACTION_TOUCH = 1
+ACTION_WIPE = 2
+
 GATEWAY_SERVICE_UUID = '354d8340-289e-11ec-a32b-531c9f618227'
 SETTING_CHARACTERISTIC_UUID = '354d8343-289e-11ec-a32b-531c9f618227'
 
@@ -37,12 +41,44 @@ def onAdvertisingStart(error):
                 ]
             })
         ]) 
- 
+
 def onWriteRequest_set(data, offset, withoutResponse, callback):
-    print(str(data))
-    # T.B.D(should call publish.publish module)
- 
+    print(len(data), str(data))
+    now = dt.now()
+    dict_data = {}
+    dict_data['date'] = now.strftime('%Y-%m-%d %H:%M:%S')
+    dict_data['address'] = prettify(data[0:6])
+    # TBD
+    dict_data['number_of_beacon'] = 0
+    dict_data['beaon'] = []
+    dict_data['action'] = convAction(data[63])
+
+    print(dict_data)
+    publish.publish(endpoint=args.ep, cert=args.cert, key=args.key, root=args.root, data=dict_data, topic=args.topic)
+
+def prettify(mac_string):
+    return ':'.join('%02x' % b for b in mac_string)
+
+def convAction(str):
+    if str == ACTION_TOUCH:
+        action = 'touch'
+    elif str == ACTION_WIPE:
+        action = 'wipe'
+    else:
+        action = 'none'
+    return action
+
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='python3 gateway.py cert key root data topic endpoint')
+
+    parser.add_argument('-c', '--cert', required=True, help='cert file path')
+    parser.add_argument('-k', '--key', required=True, help='key file path')
+    parser.add_argument('-r', '--root', required=True, help='root file path')
+    parser.add_argument('-t', '--topic', required=True, help='topic name')
+    parser.add_argument('-e', '--ep', required=True, help='endpoint')
+
+    args = parser.parse_args()
+
     bleno = Bleno()
     bleno.on('stateChange', onStateChange)
     bleno.on('advertisingStart', onAdvertisingStart)
