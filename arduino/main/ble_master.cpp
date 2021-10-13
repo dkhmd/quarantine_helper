@@ -7,7 +7,7 @@ static bool scan_peripheral() {
   bool ret = false;
   
   BLE.scanForUuid(GATEWAY_SERVICE_UUID);
-  
+
   // check if a peripheral has been discovered
   peripheral = BLE.available();
 
@@ -23,7 +23,7 @@ static bool scan_peripheral() {
     goto __fin;
   }
 
-  Serial.print("Local Name: ");
+  Serial.print("Peripheral Name: ");
   Serial.println(peripheral.localName());
 
   // print the advertised service UUIDs, if present
@@ -92,6 +92,10 @@ void ble_setup() {
 
     while (1);
   }
+
+  Serial.print("Local address is: ");
+  Serial.println(BLE.address());
+  
   Serial.println("BLE Central scan");
 
   // wait for peripheral connection
@@ -117,4 +121,16 @@ bool ble_send(byte* buf, int len) {
   }
 
   return true;
+}
+
+void ble_get_address(char ble_address[]) {
+    char temp[3];
+    int i;
+
+    for(i = 0; i < 6; i++){
+        temp[0] = BLE.address()[i * 3 + 0];
+        temp[1] = BLE.address()[i * 3 + 1];
+        temp[2] = 0x00;
+        ble_address[i] = strtol(temp, NULL, 16);
+    }
 }

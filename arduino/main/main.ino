@@ -1,3 +1,5 @@
+#include <mbed.h>
+#include <rtos.h>
 #include <SimpleTimer.h>
 
 #include "emg.h"
@@ -6,50 +8,107 @@
 
 
 /*** Definition ***/
-#define __COLLECT_RAW_DATA__    true
+// #define __COLLECT_RAW_DATA__    true
 
-#define SAMPLES                 256 //Must be a power of 2
-#define SAMPLING_FREQUENCY      200 //Hz, must be less than 10000 due to ADC
+#define EMG_SAMPLES             256 //Must be a power of 2
+#define EMG_SAMPLING_FREQUENCY  200 //Hz, must be less than 10000 due to ADC
+#define IMU_SAMPLES             128
+#define IMU_SAMPLING_FREQUENCY  100
+
+#define ACTION_TOUCH_FLAG       (1UL << 0)
+#define ACTION_WIPE_FLAG        (1UL << 1)
+
 #define DBG_BUFFER_SIZE         256
 #define MAX_BEACON_NUM          8
 
 #define PORT_BUZZER             9
 
+/*** Name Space ***/
+using namespace rtos;
+
 /*** Structure ***/
-typedef struct __attribute__((packed)) {
-  uint8_t mac[6];
-  int8_t  rssi;
-}BEACON_INFO;
+typedef enum {
+  ACTION_NON    = 0,
+  ACTION_TOUCH,
+  ACTION_WIPE,
+  ACTION_MAX
+} ACTION;
 
 typedef struct __attribute__((packed)) {
-  uint8_t       mac[6];
+  uint8_t addr[6];
+  int8_t  rssi;
+} BEACON_INFO;
+
+typedef struct __attribute__((packed)) {
+  uint8_t       addr[6];
   uint8_t       number_of_beacon;
   BEACON_INFO   beacon[MAX_BEACON_NUM];
   uint8_t action;
-}TX_DATA;
+} TX_DATA;
 
 
 /*** Variables ***/
 int           grp_counter = 0;
 int           buf_counter = 0;
-SimpleTimer   timer;
-TX_DATA       ble_tx_data;
+SimpleTimer   timer_emg, timer_imu;
+Thread        thread_touch, thread_wipe;
+EventFlags    event_flags;
+
 char          dbg_buf[DBG_BUFFER_SIZE];
+char          dbg_max = 0;
 
 
-static void repeat_task() {
+void ble_thread_touch() {
+    TX_DATA       ble_tx_data;
+
+    while(true) {
+      event_flags.wait_any(ACTION_TOUCH_FLAG);
+      
+      // Transmit
+      memset(&ble_tx_data, 0x00, sizeof(ble_tx_data));
+      Serial.print("BLE TX Data Size:");
+      Serial.println(sizeof(ble_tx_data));
+
+      ble_get_address((char *)ble_tx_data.addr);   
+      ble_tx_data.action = (char)ACTION_TOUCH;
+      ble_send((byte *)&ble_tx_data, sizeof(ble_tx_data));
+    }
+}
+
+void ble_thread_wipe() {
+    TX_DATA       ble_tx_data;
+
+    while(true) {
+      event_flags.wait_any(ACTION_WIPE_FLAG);
+      
+      // Transmit
+      memset(&ble_tx_data, 0x00, sizeof(ble_tx_data));
+      Serial.print("BLE TX Data Size:");
+      Serial.println(sizeof(ble_tx_data));
+
+      ble_get_address((char *)ble_tx_data.addr);  
+      ble_tx_data.action = (char)ACTION_WIPE;
+      ble_send((byte *)&ble_tx_data, sizeof(ble_tx_data));
+    }
+}
+
+static void emg_task() {
 
   float         emg = 0;
   SENSORS_DATA  sensors;
   unsigned long micros_start = 0;
 
   // change thread priority
-  osThreadSetPriority(osThreadGetId(), osPriorityRealtime);
+  osThreadSetPriority(osThreadGetId(), osPriorityNormal);
 
   // EMG Sampling
   emg = emg_read(A0);
+  if (emg > dbg_max) {
+    dbg_max = emg;
+  }
   // IMU Sampling
-  imu_read(&sensors);
+  // T.B.D
+//  imu_read(&sensors);
 
 #ifdef __COLLECT_RAW_DATA__
   if((grp_counter % 4) == 0) {
@@ -72,42 +131,30 @@ static void repeat_task() {
 #endif
 
   buf_counter++;
-  if(buf_counter >= SAMPLES){
+  if(buf_counter >= EMG_SAMPLES){
     buf_counter = 0;
     grp_counter++;
 
-    //T.B.D
-#if 0
-    // Inference
-    
-    // Transmit
-    memset(&ble_tx_data, 0x00, sizeof(ble_tx_data));
-    Serial.print("Data Size:");
-    Serial.print(sizeof(ble_tx_data));
-    Serial.print(",");
-
-    micros_start = micros();
-//    ble_send((byte *)&ble_tx_data, sizeof(ble_tx_data));
-    ble_send((byte *)dbg_buf, sizeof(dbg_buf));
-    Serial.print("BLE:");
-    Serial.print(micros() - micros_start);
-
-    Serial.println("");
-#endif
+    // Inference and BLE TX
+//    if (dbg_max >= 4) {
+    if ((grp_counter % 4) == 0) {
+      // set event flag
+      event_flags.set(ACTION_TOUCH_FLAG);
+    }
   }
 }
 
 void setup() {
-  unsigned int  sampling_period_us;
+  unsigned int  emg_sampling_period_us;
 
   // initialize serial
   Serial.begin(115200);
   while (!Serial);
 
   // set gloval variables
-  sampling_period_us = round(1000000 * (1.0/SAMPLING_FREQUENCY));
-  Serial.print("Sampling Period:");
-  Serial.println(sampling_period_us);
+  emg_sampling_period_us = round(1000000 * (1.0/EMG_SAMPLING_FREQUENCY));
+  Serial.print("EMG Sampling Period:");
+  Serial.println(emg_sampling_period_us);
 
   // setup each device
   emg_setup();
@@ -115,10 +162,16 @@ void setup() {
 
   ble_setup();
 
-  // set timer interval
-  timer.setInterval(sampling_period_us/1000, repeat_task);
+  // create ble thread
+  thread_touch.start(ble_thread_touch);
+  thread_wipe.start(ble_thread_wipe);
+
+  // set emg timer interval
+  timer_emg.setInterval(emg_sampling_period_us/1000, emg_task);
+  // set imu timer interval
+  // TBD
 }
- 
+
 void loop() {
-  timer.run();
+  timer_emg.run();
 }

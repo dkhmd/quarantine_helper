@@ -8,5 +8,6 @@
 
 void ble_setup();
 bool ble_send(byte* buf, int len);
+void ble_get_address(char ble_address[]);
 
 #endif
