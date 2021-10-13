@@ -2,7 +2,7 @@
   "date": "2021-10-09 17:09:30",
   "address": "b8:27:eb:c5:f7:45",
   "number_of_beacon": 3,
-  "beaon": [
+  "beacon": [
       {
           "address": "01:23:45:ab:cd:ef",
           "rssi": -90

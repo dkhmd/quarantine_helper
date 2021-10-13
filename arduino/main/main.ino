@@ -61,6 +61,8 @@ char          dbg_max = 0;
 void ble_thread_touch() {
     TX_DATA       ble_tx_data;
 
+//    osThreadSetPriority(osThreadGetId(), osPriorityHigh);
+
     while(true) {
       event_flags.wait_any(ACTION_TOUCH_FLAG);
       
@@ -94,7 +96,7 @@ void ble_thread_wipe() {
 
 static void emg_task() {
 
-  float         emg = 0;
+  int           emg = 0;
   SENSORS_DATA  sensors;
   unsigned long micros_start = 0;
 
@@ -113,11 +115,9 @@ static void emg_task() {
 #ifdef __COLLECT_RAW_DATA__
   if((grp_counter % 4) == 0) {
       digitalWrite(PORT_BUZZER, LOW);
-  } else if((grp_counter % 4) == 3) {
+  } else if((grp_counter % 4) == 3) || (buf_counter <= SAMPLES/4)) {
       digitalWrite(PORT_BUZZER, HIGH);
-  } else if(buf_counter <= SAMPLES/4) {
-      digitalWrite(PORT_BUZZER, HIGH);
-    } else {
+  } else {
       digitalWrite(PORT_BUZZER, LOW);
   }
 

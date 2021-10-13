@@ -4,6 +4,6 @@
 #include <ArduinoBLE.h>
 
 void emg_setup();
-float emg_read(int port);
+int emg_read(int port);
 
 #endif
