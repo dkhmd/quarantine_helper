@@ -47,19 +47,22 @@ def onAdvertisingStart(error):
 
 def onWriteRequest_set(data, offset, withoutResponse, callback):
     print(len(data), str(data))
-    now = dt.now()
-    dict_data = {}
-    dict_data['date'] = now.strftime('%Y-%m-%d %H:%M:%S')
-    dict_data['address'] = prettify(data[0:6])
-    # TBD
-    dict_data['number_of_beacon'] = 0
-    dict_data['beaon'] = []
-    dict_data['action'] = convAction(data[63])
-    print(dict_data)
+    try:
+        now = dt.now()
+        dict_data = {}
+        dict_data['date'] = now.strftime('%Y-%m-%d %H:%M:%S')
+        dict_data['address'] = prettify(data[0:6])
+        # TBD
+        dict_data['number_of_beacon'] = 0
+        dict_data['beaon'] = []
+        dict_data['action'] = convAction(data[63])
+        print(dict_data)
 
-    topic = 'device/' + str(binascii.hexlify(data[0:6]), 'utf-8') + '/data'
-    print(topic)
-    publish.publish(endpoint=args.ep, cert=args.cert, key=args.key, root=args.root, data=dict_data, topic=topic)
+        topic = 'device/' + str(binascii.hexlify(data[0:6]), 'utf-8') + '/data'
+        print(topic)
+        publish.publish(endpoint=args.ep, cert=args.cert, key=args.key, root=args.root, dict_data=dict_data, topic=topic)
+    except:
+        pass
 
 def prettify(mac_string):
     return ':'.join('%02x' % b for b in mac_string)

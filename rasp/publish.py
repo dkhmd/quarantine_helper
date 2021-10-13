@@ -40,8 +40,8 @@ def publish(endpoint, cert, key, root, dict_data, topic):
     print("Connected!")
     # Publish message to server desired number of times.
     print('Begin Publish')
-    mqtt_connection.publish(topic=TOPIC, payload=json.dumps(data), qos=mqtt.QoS.AT_LEAST_ONCE)
-    print("Published: '" + json.dumps(data) + "' to the topic: " + topic)
+    mqtt_connection.publish(topic=TOPIC, payload=json.dumps(dict_data), qos=mqtt.QoS.AT_LEAST_ONCE)
+    print("Published: '" + json.dumps(dict_data) + "' to the topic: " + topic)
     disconnect_future = mqtt_connection.disconnect()
     disconnect_future.result()
 
