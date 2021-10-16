@@ -35,15 +35,15 @@ typedef enum {
 } ACTION;
 
 typedef struct __attribute__((packed)) {
-  uint8_t addr[6];
-  int8_t  rssi;
+  uint8_t       addr[6];
+  int8_t        rssi;
 } BEACON_INFO;
 
 typedef struct __attribute__((packed)) {
   uint8_t       addr[6];
   uint8_t       number_of_beacon;
   BEACON_INFO   beacon[MAX_BEACON_NUM];
-  uint8_t action;
+  uint8_t       action;
 } TX_DATA;
 
 
