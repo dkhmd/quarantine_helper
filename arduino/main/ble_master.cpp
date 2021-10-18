@@ -112,15 +112,17 @@ void ble_setup() {
 
 
 bool ble_send(byte* buf, int len) {
+  bool ret = false;
+  
   if (peripheral.connect()) {
-    cmdCharacteristic.writeValue(buf, len);
+    ret = cmdCharacteristic.writeValue(buf, len);
   } else {
     Serial.println("Failed to connect!");
     peripheral.disconnect();
     return false;
   }
 
-  return true;
+  return ret;
 }
 
 void ble_get_address(char ble_address[]) {
