@@ -10,20 +10,21 @@
 /*** Definition ***/
 // #define __COLLECT_RAW_DATA__    true
 
-#define SAMPLES                 256 //Must be a power of 2
-#define SAMPLING_FREQUENCY      200 //Hz, must be less than 10000 due to ADC
+#define SAMPLES                     256 //Must be a power of 2
+#define SAMPLING_FREQUENCY          200 //Hz, must be less than 10000 due to ADC
 
-#define SENSOR_FLAG_A           (1UL << 0)
-#define SENSOR_FLAG_B           (1UL << 1)
+#define SENSOR_FLAG_AVAILABLE       (1UL << 0)
 
-#define BLE_FLAG_IDLE           (1UL << 0)
-#define BLE_FLAG_TOUCH          (1UL << 1)
-#define BLE_FLAG_WIPE           (1UL << 2)
+#define INF_FLAG_DATA_A             (1UL << 0)
+#define INF_FLAG_DATA_B             (1UL << 1)
 
-#define DBG_BUFFER_SIZE         256
-#define MAX_BEACON_NUM          8
+#define BLE_FLAG_TOUCH              (1UL << 0)
+#define BLE_FLAG_WIPE               (1UL << 1)
 
-#define PORT_BUZZER             9
+#define DBG_BUFFER_SIZE             256
+#define MAX_BEACON_NUM              8
+
+#define PORT_BUZZER                 9
 
 /*** Name Space ***/
 using namespace rtos;
@@ -54,12 +55,11 @@ int           sensor_counter = 0;
 int           emg_data[SAMPLES];
 SENSORS_DATA  imu_data[SAMPLES];
 
-
 int           grp_counter = 0;
 int           buf_counter = 0;
 SimpleTimer   timer_sensor;
 Thread        inference_a_thread, inference_b_thread, ble_touch_thread, ble_wipe_thread;
-EventFlags    inf_flags, ble_flags;
+EventFlags    sensor_flags, inf_flags, ble_flags;
 
 char          dbg_buf[DBG_BUFFER_SIZE];
 char          dbg_max = 0;
@@ -80,7 +80,7 @@ static void ble_touch_thread_cb(){
     ble_tx_data.action = (char)ACTION_TOUCH;
     ble_send((byte *)&ble_tx_data, sizeof(ble_tx_data));
 
-    ble_flags.set(BLE_FLAG_IDLE);  
+    sensor_flags.set(SENSOR_FLAG_AVAILABLE);
   }
 }
 
@@ -98,7 +98,7 @@ static void ble_wipe_thread_cb(){
     ble_tx_data.action = (char)ACTION_WIPE;
     ble_send((byte *)&ble_tx_data, sizeof(ble_tx_data));
 
-    ble_flags.set(BLE_FLAG_IDLE);
+    sensor_flags.set(SENSOR_FLAG_AVAILABLE);
   }
 }
 
@@ -106,17 +106,17 @@ static void inference_a_thread_cb(){
   while(true) {
     ACTION action = ACTION_NONE;
     
-    inf_flags.wait_all(SENSOR_FLAG_A, osWaitForever, false);
+    inf_flags.wait_all(INF_FLAG_DATA_A, osWaitForever, false);
 
     // Inference
     // TBD
 
     // BLE Transmit
-    ble_flags.clear(BLE_FLAG_IDLE); // stop sensor
-    ble_flags.set(BLE_FLAG_TOUCH);  // start ble thread
+    sensor_flags.clear(SENSOR_FLAG_AVAILABLE);  // stop sensor
+    ble_flags.set(BLE_FLAG_TOUCH);              // start ble thread
 
     // clear flag
-    inf_flags.clear(SENSOR_FLAG_A);
+    inf_flags.clear(INF_FLAG_DATA_A);
   }
 }
 
@@ -124,22 +124,22 @@ static void inference_b_thread_cb(){
   while(true) {
     ACTION action = ACTION_NONE;
 
-    inf_flags.wait_all(SENSOR_FLAG_B, osWaitForever, false);
+    inf_flags.wait_all(INF_FLAG_DATA_B, osWaitForever, false);
 
     // Inference
     // TBD
 
     // BLE Transmit
-    ble_flags.clear(BLE_FLAG_IDLE); // stop sensor
-    ble_flags.set(BLE_FLAG_WIPE);  // start ble thread
+    sensor_flags.clear(SENSOR_FLAG_AVAILABLE);  // stop sensor
+    ble_flags.set(BLE_FLAG_WIPE);               // start ble thread
 
     // clear flag
-    inf_flags.clear(SENSOR_FLAG_B);
+    inf_flags.clear(INF_FLAG_DATA_B);
   }
 }
 
 static void sensor_task() {
-  ble_flags.wait_all(BLE_FLAG_IDLE, osWaitForever, false);
+  sensor_flags.wait_all(SENSOR_FLAG_AVAILABLE, osWaitForever, false);
   
   // EMG Sampling(200HZ)
   emg_data[sensor_counter] = emg_read(A0);
@@ -152,7 +152,7 @@ static void sensor_task() {
 #ifdef __COLLECT_RAW_DATA__
   if((grp_counter % 4) == 0) {
       digitalWrite(PORT_BUZZER, LOW);
-  } else if((grp_counter % 4) == 3) || (buf_counter <= SAMPLES/4)) {
+  } else if(((grp_counter % 4) == 3) || (sensor_counter <= SAMPLES/4)) {
       digitalWrite(PORT_BUZZER, HIGH);
   } else {
       digitalWrite(PORT_BUZZER, LOW);
@@ -161,17 +161,18 @@ static void sensor_task() {
   if((grp_counter % 4) == 0) {
     // print sensor values
     sprintf(dbg_buf, "[DATA]grp:%d, cnt:%d, sample:%d, emg:%f, acc_x:%f, acc_y:%f, acc_z:%f, gyro_x:%f, gyro_y:%f, gyro_z:%f", \
-                  grp_counter, buf_counter, SAMPLES, emg, sensors.sensor[SENSOR_KIND_ACC].x, sensors.sensor[SENSOR_KIND_ACC].y, sensors.sensor[SENSOR_KIND_ACC].z, \
-                  sensors.sensor[SENSOR_KIND_GYRO].x, sensors.sensor[SENSOR_KIND_GYRO].y, sensors.sensor[SENSOR_KIND_GYRO].z);
+                  grp_counter, buf_counter, SAMPLES, emg_data[sensor_counter],
+                  imu_data[sensor_counter].sensor[SENSOR_KIND_ACC].x, imu_data[sensor_counter].sensor[SENSOR_KIND_ACC].y, imu_data[sensor_counter].sensor[SENSOR_KIND_ACC].z, \
+                  imu_data[sensor_counter].sensor[SENSOR_KIND_GYRO].x, imu_data[sensor_counter].sensor[SENSOR_KIND_GYRO].y, imu_data[sensor_counter].sensor[SENSOR_KIND_GYRO].z);
     Serial.println(dbg_buf);
   }
 #endif
 
   sensor_counter++;
   if(sensor_counter == SAMPLES){
-    inf_flags.set(SENSOR_FLAG_A);
+    inf_flags.set(INF_FLAG_DATA_A);
   } else if(sensor_counter == SAMPLES * 2){
-    inf_flags.set(SENSOR_FLAG_B);
+    inf_flags.set(INF_FLAG_DATA_B);
     sensor_counter = 0;
   }
 }
@@ -205,7 +206,7 @@ void setup() {
   inference_b_thread.start(inference_b_thread_cb);
 
   // set ble state
-  ble_flags.set(BLE_FLAG_IDLE);
+  sensor_flags.set(SENSOR_FLAG_AVAILABLE);
 
   // set sensor timer interval
   timer_sensor.setInterval(sampling_period_us/1000, sensor_task);
