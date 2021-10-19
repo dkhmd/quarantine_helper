@@ -116,10 +116,16 @@ bool ble_send(byte* buf, int len) {
   
   if (peripheral.connect()) {
     ret = cmdCharacteristic.writeValue(buf, len);
+    if (ret != true){
+      Serial.println("Failed to tx!");
+    }
   } else {
     Serial.println("Failed to connect!");
-    peripheral.disconnect();
-    return false;
+  }
+
+  if(ret != true){
+    Serial.println("Try to reconnect...!");
+    connect_peripheral();
   }
 
   return ret;
