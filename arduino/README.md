@@ -23,6 +23,10 @@ Arduino nano BLE 33 SENSE のピン配は[こちら](https://content.arduino.cc/
 | 黒 | GND | - |
 | 緑 | A0 | SIG |
 
+## EMGセンサー
+接触が悪い場合は、ジャンパーワイヤーとの接点を養生テープで固定したり半田付けすること。
+* 緑色LED: 電源供給時に点灯
+* 赤色LED: SIG(筋電位)検出時に点灯
 
 # ファームアップ方法
 PCとArduinoをUSBケーブルで接続した状態でArduino IDEを立ち上げ、Uploadボタンを押す。
