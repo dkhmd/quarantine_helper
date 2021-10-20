@@ -6,12 +6,28 @@
 
 * [こちら](https://www.arduino.cc/en/Guide/NANO33BLE)に沿って、BoardをArduino Nano 33 BLEに変更する。
 
+## ライブラリ
+[こちら](http://make.bcde.jp/arduino/arduino%E3%83%A9%E3%82%A4%E3%83%95%E3%82%99%E3%83%A9%E3%83%AA%E3%81%AE%E8%BF%BD%E5%8A%A0/)の方法に沿って、IDE上から以下のライブラリを追加する
+* Arduino_TensorFlowLite
+* arduinoFFT
+
+# ボードセットアップ
+Arduino nano BLE 33 SENSE のピン配は[こちら](https://content.arduino.cc/assets/Pinout-NANOble_latest.pdf?_gl=1*hhy82y*_ga*NzcxNDEyMzExLjE2MzIyOTM1MTM.*_ga_SELSHHP7SG*MTYzNDcwNzIzMi42LjEuMTYzNDcwNzIzMi4w)なり、EMGセンサーのデータシートは[こちら](https://cdn.sparkfun.com/datasheets/Sensors/Biometric/MyowareUserManualAT-04-001.pdf)となる。  
+以下の通り、ArduinoとEMGセンサーを接続すること
+![image](https://user-images.githubusercontent.com/16249131/138039272-1f085203-09a0-4e7c-bc67-5a414f346690.png)
+
+
+| | Arduino | EMGセンサー |
+| :---: | :---: | :---: |
+| 赤 | +3V3 | + |
+| 黒 | GND | - |
+| 緑 | A0 | SIG |
+
+
 # ファームアップ方法
-PCとArduinoを接続した状態でArduino IDEを立ち上げ、Uploadボタンを押す。
+PCとArduinoをUSBケーブルで接続した状態でArduino IDEを立ち上げ、Uploadボタンを押す。
 
 # 開発方法
 PCとArduinoを接続した状態でArduino IDEを立ち上げ、File -> Open -> main.ino を選択すると全てのソースコードが展開される。  
 Tools -> Serial Monitor や Serial Plotter でデバッグ文やプロット図がリアルタイムに確認できる。
 
-## ライブラリ
-T.B.D
