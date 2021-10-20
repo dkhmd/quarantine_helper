@@ -3,10 +3,12 @@
 void emg_setup() {
 }
 
-int emg_read(int port) { 
-  int sensorValue;
+float emg_read(int port) { 
+  int sensorValue = 0;
+  float voltage = 0;
   
   sensorValue = analogRead(port);
+  voltage = ((float)sensorValue) * 5 / 1023;
 
-  return sensorValue;
+  return voltage;
 }

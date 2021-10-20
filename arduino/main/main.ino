@@ -4,6 +4,7 @@
 
 #include "emg.h"
 #include "imu.h"
+#include "fft.h"
 #include "ble_master.h"
 
 
@@ -52,7 +53,7 @@ typedef struct __attribute__((packed)) {
 
 /*** Variables ***/
 int           sensor_counter = 0;
-int           emg_data[SAMPLES];
+float         emg_data[SAMPLES];
 SENSORS_DATA  imu_data[SAMPLES];
 
 int           grp_counter = 0;
