@@ -10,6 +10,7 @@ import datetime
 import numpy as np
 import math
 from datetime import date, timedelta, timezone
+import os
 
 def get_s3_filelist(bucketnm):
     '''
@@ -39,6 +40,18 @@ def write_file_to_s3(bucketnm, filenm, local_file_path):
     s3 = boto3.resource('s3')
     s3.Object(bucketnm, filenm).put(Body=open(local_file_path, 'rb'), ACL='bucket-owner-full-control')
 
+def write_dir_to_s3(bucketnm, dirnm, local_dir_path):
+    '''
+    write a directory to s3 bucket
+    '''
+    parent_dir = os.path.dirname(os.path.realpath(local_dir_path))
+    for (path, dirs, files) in os.walk(local_dir_path):
+        for fn in files:
+            if fn.startswith('.'):
+                continue
+            abspath = os.path.join(path, fn)
+            write_file_to_s3(bucketnm, dirnm + '/' + abspath, abspath)
+    
 def read_s3_body(bucketnm, filenm):
     '''
     a query to read the file body in the s3 bucket
