@@ -15,6 +15,11 @@ limitations under the License.
 
 #include "inference.h"
 
+#define TENSOR_ARENA_SIZE   (60 * 1024)
+#define OUTPUT_BUFFER_SIZE  128
+
+char    output_buf[OUTPUT_BUFFER_SIZE];
+
 // Globals, used for compatibility with Arduino-style sketches.
 namespace {
 tflite::ErrorReporter* error_reporter = nullptr;
@@ -22,9 +27,8 @@ const tflite::Model* model = nullptr;
 tflite::MicroInterpreter* interpreter = nullptr;
 TfLiteTensor* input = nullptr;
 TfLiteTensor* output = nullptr;
-int inference_count = 0;
 
-constexpr int kTensorArenaSize = 60 * 1024;
+constexpr int kTensorArenaSize = TENSOR_ARENA_SIZE;
 uint8_t tensor_arena[kTensorArenaSize];
 }  // namespace
 
@@ -66,17 +70,25 @@ void inference_setup() {
   input = interpreter->input(0);
   output = interpreter->output(0);
 
-  // Keep track of how many inferences we have performed.
-  inference_count = 0;
+  if (input->type != kTfLiteInt8) {
+    TF_LITE_REPORT_ERROR(error_reporter,
+                         "Bad input tensor parameters in model");
+    return;
+  }
 }
 
-bool inference_exec(float data[], int len) {
-  // Quantize the input from floating-point to integer
-//  int8_t x_quantized = x / input->params.scale + input->params.zero_point;
-  // Place the quantized input in the model's input tensor
-//  input->data.int8[0] = x_quantized;
+bool inference_exec(float data[], int len, ACTION *act) {
+  int i = 0;
+  unsigned long start = 0;
 
-  memcpy(input->data.f, data, sizeof(float) * len);
+  start = micros();
+
+  *act = ACTION_NONE;
+
+  // Quantize the input from floating-point to integer
+  for (i=0; i<len; i++){
+    input->data.int8[i] = data[i] / input->params.scale + input->params.zero_point;
+  }
 
   // Run inference, and report any error
   TfLiteStatus invoke_status = interpreter->Invoke();
@@ -86,12 +98,21 @@ bool inference_exec(float data[], int len) {
   }
 
   // Obtain the quantized output from model's output tensor
-//  int8_t y_quantized = output->data.int8[0];
-  // Dequantize the output from integer to floating-point
-//  float y = (y_quantized - output->params.zero_point) * output->params.scale;
+  int8_t y0_quantized = output->data.int8[ACTION_NONE];
+  float y0 = (y0_quantized - output->params.zero_point) * output->params.scale;
 
-  TF_LITE_REPORT_ERROR(error_reporter, "None :  %5.2f", output->data.f[0]); //None
-  TF_LITE_REPORT_ERROR(error_reporter, "Touch:  %5.2f", output->data.f[1]); //Touch
+  int8_t y1_quantized = output->data.int8[ACTION_TOUCH];
+  float y1 = (y1_quantized - output->params.zero_point) * output->params.scale;
+
+  Serial.print("inf   :");
+  Serial.println(micros() - start);
+  
+  sprintf(output_buf, "None:%f, Touch%f", y0, y1);
+  Serial.println(output_buf);
+
+  if (max(y0, y1) == y1) {
+    *act = ACTION_TOUCH;
+  }
 
   return true;
 }

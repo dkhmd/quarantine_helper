@@ -2,6 +2,7 @@
 #include <rtos.h>
 #include <SimpleTimer.h>
 
+#include "common.h"
 #include "emg.h"
 #include "imu.h"
 #include "fft.h"
@@ -32,13 +33,6 @@
 using namespace rtos;
 
 /*** Structure ***/
-typedef enum {
-  ACTION_NONE   = 0,
-  ACTION_TOUCH,
-  ACTION_WIPE,
-  ACTION_MAX
-} ACTION;
-
 typedef struct __attribute__((packed)) {
   uint8_t       addr[6];
   int8_t        rssi;
@@ -104,19 +98,33 @@ static void ble_wipe_thread_cb(){
   }
 }
 
+static void transmit_ble(ACTION act){
+  // BLE Transmit
+  switch (act){
+    case ACTION_TOUCH:
+      sensor_flags.clear(SENSOR_FLAG_AVAILABLE);  // stop sensor
+      ble_flags.set(BLE_FLAG_TOUCH);              // start ble thread
+      break;
+    case ACTION_WIPE:
+      sensor_flags.clear(SENSOR_FLAG_AVAILABLE);  // stop sensor
+      ble_flags.set(BLE_FLAG_WIPE);               // start ble thread
+      break;
+    case ACTION_NONE:
+    default:
+      break;
+  }
+}
+
 static void inference_a_thread_cb(){  
   while(true) {
-    ACTION action = ACTION_NONE;
+    ACTION act = ACTION_NONE;
     
     inf_flags.wait_all(INF_FLAG_DATA_A, osWaitForever, false);
 
     // Inference
     Serial.println("inference a");
-    inference_exec(&emg_data[0], SAMPLES);
-
-    // BLE Transmit
-    sensor_flags.clear(SENSOR_FLAG_AVAILABLE);  // stop sensor
-    ble_flags.set(BLE_FLAG_TOUCH);              // start ble thread
+    inference_exec(&emg_data[0], SAMPLES, &act);
+    transmit_ble(act);
 
     // clear flag
     inf_flags.clear(INF_FLAG_DATA_A);
@@ -125,17 +133,14 @@ static void inference_a_thread_cb(){
 
 static void inference_b_thread_cb(){  
   while(true) {
-    ACTION action = ACTION_NONE;
+    ACTION act = ACTION_NONE;
 
     inf_flags.wait_all(INF_FLAG_DATA_B, osWaitForever, false);
 
     // Inference
     Serial.println("inference b");
-    inference_exec(&emg_data[SAMPLES], SAMPLES);
-
-    // BLE Transmit
-    sensor_flags.clear(SENSOR_FLAG_AVAILABLE);  // stop sensor
-    ble_flags.set(BLE_FLAG_WIPE);               // start ble thread
+    inference_exec(&emg_data[SAMPLES], SAMPLES, &act);
+    transmit_ble(act);
 
     // clear flag
     inf_flags.clear(INF_FLAG_DATA_B);
