@@ -6,6 +6,7 @@
 #include "imu.h"
 #include "fft.h"
 #include "ble_master.h"
+#include "inference.h"
 
 
 /*** Definition ***/
@@ -110,7 +111,8 @@ static void inference_a_thread_cb(){
     inf_flags.wait_all(INF_FLAG_DATA_A, osWaitForever, false);
 
     // Inference
-    // TBD
+    Serial.println("inference a");
+    inference_exec(&emg_data[0], SAMPLES);
 
     // BLE Transmit
     sensor_flags.clear(SENSOR_FLAG_AVAILABLE);  // stop sensor
@@ -128,7 +130,8 @@ static void inference_b_thread_cb(){
     inf_flags.wait_all(INF_FLAG_DATA_B, osWaitForever, false);
 
     // Inference
-    // TBD
+    Serial.println("inference b");
+    inference_exec(&emg_data[SAMPLES], SAMPLES);
 
     // BLE Transmit
     sensor_flags.clear(SENSOR_FLAG_AVAILABLE);  // stop sensor
@@ -197,6 +200,8 @@ void setup() {
   imu_setup();
 
   ble_setup();
+
+  inference_setup();
 
   // create ble thread
   ble_touch_thread.start(ble_touch_thread_cb);
