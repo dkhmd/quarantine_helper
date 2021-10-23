@@ -16,6 +16,13 @@ sudo python data_upload.py label (samples)
 - label: ラベル名
 - sample: サンプリング数、省略時は256 
 ### 注意
-- 事前に `aws configure` を設定しておくこと
+- 事前に `aws configure` を[設定](https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-configure-quickstart.html)しておくこと
+```bash
+$ aws configure
+AWS Access Key ID [None]: アクセスキー
+AWS Secret Access Key [None]: シークレットアクセスキー
+Default region name [None]: ap-northeast-1
+Default output format [None]: json
+```
 - /tmp/data.csv に一時ファイルを保存するため、書き込み権限を渡しておくこと
 - プログラム内でシリアルデバイス名を直書しているため、デバイス名が異なる場合はプログラム内の `SERIAL_DEVICE_NAME` を所望のデバイス名に書き換えること
