@@ -1,6 +1,6 @@
 #include <mbed.h>
 #include <rtos.h>
-#include <SimpleTimer.h>
+#include <NRF52_MBED_TimerInterrupt.h>
 
 #include "common.h"
 #include "emg.h"
@@ -13,6 +13,7 @@
 /*** Definition ***/
 // #define __COLLECT_RAW_DATA__    true
 
+#define TIMER_INTERVAL_US           5000
 #define SAMPLES                     256 //Must be a power of 2
 #define SAMPLING_FREQUENCY          200 //Hz, must be less than 10000 due to ADC
 
@@ -30,37 +31,47 @@
 
 #define PORT_BUZZER                 9
 
+
 /*** Name Space ***/
 using namespace rtos;
 
+
 /*** Structure ***/
 typedef struct __attribute__((packed)) {
-  uint8_t       addr[6];
-  int8_t        rssi;
+uint8_t           addr[6];
+int8_t            rssi;
 } BEACON_INFO;
 
 typedef struct __attribute__((packed)) {
-  uint8_t       addr[6];
-  uint8_t       number_of_beacon;
-  BEACON_INFO   beacon[MAX_BEACON_NUM];
-  uint8_t       action;
+uint8_t           addr[6];
+uint8_t           number_of_beacon;
+BEACON_INFO       beacon[MAX_BEACON_NUM];
+uint8_t           action;
 } TX_DATA;
 
 
 /*** Variables ***/
-int           sensor_counter = 0;
-float         emg_data[SAMPLES];
-SENSORS_DATA  imu_data[SAMPLES];
+int               sensor_counter = 0;
+float             emg_data[SAMPLES];
+SENSORS_DATA      imu_data[SAMPLES];
 
-int           grp_counter = 0;
-int           buf_counter = 0;
-SimpleTimer   timer_obj;
-Thread        sensor_thread, inference_a_thread, inference_b_thread, ble_touch_thread, ble_wipe_thread;
-EventFlags    sensor_flags, inf_flags, ble_flags;
+int               grp_counter = 0;
+int               buf_counter = 0;
+Thread            sensor_thread, inference_a_thread, inference_b_thread, ble_touch_thread, ble_wipe_thread;
+EventFlags        sensor_flags, inf_flags, ble_flags;
 
-char          dbg_buf[DBG_BUFFER_SIZE];
-char          dbg_max = 0;
+char              dbg_buf[DBG_BUFFER_SIZE];
+char              dbg_max = 0;
 
+// Init NRF52 timer NRF_TIMER3
+NRF52_MBED_Timer  ITimer0(NRF_TIMER_3);
+
+
+/*** Interrupt ***/
+void timer_handler()
+{  
+  sensor_flags.set(SENSOR_FLAG_TMR_AVAILABLE);
+}
 
 /*** Functions ***/
 static void transmit_ble(ACTION act){
@@ -198,10 +209,6 @@ static void sensor_thread_cb() {
   }
 }
 
-static void timer_task(){
-  sensor_flags.set(SENSOR_FLAG_TMR_AVAILABLE);
-}
-
 void setup() {
   unsigned int  sampling_period_us = 0;
 
@@ -235,10 +242,11 @@ void setup() {
   sensor_flags.clear(SENSOR_FLAG_TMR_AVAILABLE);
   sensor_flags.set(SENSOR_FLAG_BLE_AVAILABLE);
 
-  // set timer interval
-  timer_obj.setInterval(sampling_period_us/1000, timer_task);
+  // start timer
+  if (!(ITimer0.attachInterruptInterval(TIMER_INTERVAL_US, timer_handler))){
+    Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
+  }
 }
 
 void loop() {
-  timer_obj.run();
 }
