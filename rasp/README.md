@@ -41,5 +41,12 @@ python publish.py --cert certs/certificate.pem.crt --key certs/private.pem.key -
 - topic: MQTTのトピック名
 - ep: AWS IoT エンドポイント
 ### 注意
-証明書などを誤ってコミットしないこと  
+- 証明書などを誤ってコミットしないこと  
 テストする際は証明書などはgit管理下以外、もしくは.gitignoreされているcertsディレクトリ以下に保管した上でテストすること
+- 事前に `aws configure` を[設定](https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-configure-quickstart.html)しておくこと
+```bash
+$ aws configure
+AWS Access Key ID [None]: アクセスキー
+AWS Secret Access Key [None]: シークレットアクセスキー
+Default region name [None]: ap-northeast-1
+Default output format [None]: json
