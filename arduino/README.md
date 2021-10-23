@@ -7,7 +7,10 @@
 
 ## ライブラリ
 [こちら](http://make.bcde.jp/arduino/arduino%E3%83%A9%E3%82%A4%E3%83%95%E3%82%99%E3%83%A9%E3%83%AA%E3%81%AE%E8%BF%BD%E5%8A%A0/)の方法に沿って、IDE上から以下のライブラリを追加する
+* NRF52_MBED_TimerInterrupt
 * Arduino_TensorFlowLite
+* ArduinoBLE
+* Arduino_LSM9DS1
 * arduinoFFT
 
 # ボードセットアップ
