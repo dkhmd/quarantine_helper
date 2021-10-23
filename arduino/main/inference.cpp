@@ -81,7 +81,7 @@ bool inference_exec(float data[], int len, ACTION *act) {
   int i = 0;
   unsigned long start = 0;
 
-  start = micros();
+  Serial.println("[INF]Start");
 
   *act = ACTION_NONE;
 
@@ -103,11 +103,8 @@ bool inference_exec(float data[], int len, ACTION *act) {
 
   int8_t y1_quantized = output->data.int8[ACTION_TOUCH];
   float y1 = (y1_quantized - output->params.zero_point) * output->params.scale;
-
-  Serial.print("inf   :");
-  Serial.println(micros() - start);
   
-  sprintf(output_buf, "None:%f, Touch%f", y0, y1);
+  sprintf(output_buf, "[INF]None:%f, Touch:%f", y0, y1);
   Serial.println(output_buf);
 
   if (max(y0, y1) == y1) {
