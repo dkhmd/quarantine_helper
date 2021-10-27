@@ -54,7 +54,8 @@ Default output format [None]: json
 <br>
 
 # BLEデバイスの見つけ方
-1. iPhoneに[BLE Scanner](https://apps.apple.com/us/app/ble-scanner-4-0/id1221763603)などをインストールし、Beacon端末のLocal NameやService UUIDsを確認する
+1. iPhoneに[BLE Scanner](https://apps.apple.com/us/app/ble-scanner-4-0/id1221763603)などをインストールし、ConnectしてBeacon端末のLocal NameやService UUIDsを確認する  
+![image](https://user-images.githubusercontent.com/16249131/139071362-9d09a2d4-a002-4801-8054-dce032bdeaa3.png)
 2. ラズパイにログインし、BLEサービスが `active(running)` になっていることを確認する
 ```bash
 $ sudo systemctl status bluetooth
