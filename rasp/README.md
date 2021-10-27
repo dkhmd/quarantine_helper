@@ -50,3 +50,46 @@ AWS Access Key ID [None]: アクセスキー
 AWS Secret Access Key [None]: シークレットアクセスキー
 Default region name [None]: ap-northeast-1
 Default output format [None]: json
+```
+<br>
+
+# BLEデバイスの見つけ方
+1. iPhoneに[BLE Scanner](https://apps.apple.com/us/app/ble-scanner-4-0/id1221763603)などをインストールし、Beacon端末のLocal NameやService UUIDsを確認する
+2. ラズパイにログインし、BLEサービスが `active(running)` になっていることを確認する
+```bash
+$ sudo systemctl status bluetooth
+● bluetooth.service - Bluetooth service
+   Loaded: loaded (/lib/systemd/system/bluetooth.service; enabled; vendor preset: enabled)
+   Active: active (running) since 土 2021-10-23 19:49:55 JST; 4 days ago
+     Docs: man:bluetoothd(8)
+ Main PID: 836 (bluetoothd)
+   Status: "Running"
+   CGroup: /system.slice/bluetooth.service
+           └─836 /usr/lib/bluetooth/bluetoothd
+```
+3. ラズパイ上でBLEのスキャンを開始する
+```bash
+$ sudo bluetoothctl
+[bluetooth]# scan on
+```
+4. ラズパイ上でBeacon端末がスキャンされることを確認する
+```bash
+...
+[NEW] Device 00:1C:4D:45:4E:04
+...
+```
+5. ラズパイ上でBeacon端末に対して情報を取得し、1. の内容とVerifyする
+```bash
+[bluetooth]# info 00:1C:4D:45:4E:04
+Device 00:1C:4D:45:4E:04
+	Name:
+	Alias:
+	Paired: no
+	Trusted: no
+	Blocked: no
+	Connected: no
+	LegacyPairing: no
+	UUID: Vendor specific           (fe8a9e37-24f6-4800-8cb4-067c08dc776b)
+	UUID: Unknown                   (0000fef8-0000-1000-8000-00805f9b34fb)
+	RSSI: -94
+```
