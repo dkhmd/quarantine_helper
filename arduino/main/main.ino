@@ -105,6 +105,7 @@ static void ble_touch_thread_cb(){
     ble_tx_data.action = (char)ACTION_TOUCH;
     ble_send((byte *)&ble_tx_data, sizeof(ble_tx_data));
 
+    sensor_counter = 0;
     sensor_flags.set(SENSOR_FLAG_BLE_AVAILABLE);
   }
 }
@@ -123,6 +124,7 @@ static void ble_wipe_thread_cb(){
     ble_tx_data.action = (char)ACTION_WIPE;
     ble_send((byte *)&ble_tx_data, sizeof(ble_tx_data));
 
+    sensor_counter = 0;
     sensor_flags.set(SENSOR_FLAG_BLE_AVAILABLE);
   }
 }
@@ -130,8 +132,7 @@ static void ble_wipe_thread_cb(){
 static void inference_a_thread_cb(){
   osThreadSetPriority(osThreadGetId(), osPriorityAboveNormal);
   while(true) {
-    ACTION act = ACTION_NONE;
-    unsigned long start = 0;
+    ACTION act = ACTION_NONE
     
     inf_flags.wait_all(INF_FLAG_DATA_A, osWaitForever, false);
 
