@@ -1,5 +1,5 @@
 # はじめに
-PCやRaspberry piに以下のコマンドで、本リポジトリをダウンロードしておく  
+開発用PCやRaspberry piに以下のコマンドで、本リポジトリをダウンロードしておく  
 `git clone https://github.com/airkei/quarantine_helper.git`
 
 # ディレクトリ構成
