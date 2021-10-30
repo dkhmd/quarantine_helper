@@ -6,14 +6,13 @@
 #include "emg.h"
 #include "imu.h"
 #include "fft.h"
-#include "ble_master.h"
+#include "ble_peripheral.h"
 #include "inference.h"
 
 
 /*** Definition ***/
 // #define __COLLECT_RAW_DATA__    true
 
-#define TIMER_INTERVAL_US           5000
 #define SAMPLES                     256 //Must be a power of 2
 #define SAMPLING_FREQUENCY          200 //Hz, must be less than 10000 due to ADC
 
@@ -37,17 +36,6 @@ using namespace rtos;
 
 
 /*** Structure ***/
-typedef struct __attribute__((packed)) {
-uint8_t           addr[6];
-int8_t            rssi;
-} BEACON_INFO;
-
-typedef struct __attribute__((packed)) {
-uint8_t           addr[6];
-uint8_t           number_of_beacon;
-BEACON_INFO       beacon[MAX_BEACON_NUM];
-uint8_t           action;
-} TX_DATA;
 
 
 /*** Variables ***/
@@ -92,18 +80,11 @@ static void transmit_ble(ACTION act){
 }
 
 static void ble_touch_thread_cb(){
-  TX_DATA       ble_tx_data;
-
   while(true) {
     ble_flags.wait_all(BLE_FLAG_TOUCH);
   
-    memset(&ble_tx_data, 0x00, sizeof(ble_tx_data));
-    Serial.print("[BLE]TX Data Size(TOUCH):");
-    Serial.println(sizeof(ble_tx_data));
-  
-    ble_get_address((char *)ble_tx_data.addr);   
-    ble_tx_data.action = (char)ACTION_TOUCH;
-    ble_send((byte *)&ble_tx_data, sizeof(ble_tx_data));
+    Serial.println("[BLE]Notify TOUCH");
+    ble_peripheral_notify(ACTION_TOUCH);
 
     sensor_counter = 0;
     sensor_flags.set(SENSOR_FLAG_BLE_AVAILABLE);
@@ -111,18 +92,11 @@ static void ble_touch_thread_cb(){
 }
 
 static void ble_wipe_thread_cb(){
-  TX_DATA       ble_tx_data;
-
   while(true) {
     ble_flags.wait_all(BLE_FLAG_WIPE);
-  
-    memset(&ble_tx_data, 0x00, sizeof(ble_tx_data));
-    Serial.print("[BLE]TX Data Size(WIPE) :");
-    Serial.println(sizeof(ble_tx_data));
-  
-    ble_get_address((char *)ble_tx_data.addr);   
-    ble_tx_data.action = (char)ACTION_WIPE;
-    ble_send((byte *)&ble_tx_data, sizeof(ble_tx_data));
+
+    Serial.println("[BLE]Notify WIPE");
+    ble_peripheral_notify(ACTION_WIPE);
 
     sensor_counter = 0;
     sensor_flags.set(SENSOR_FLAG_BLE_AVAILABLE);
@@ -132,7 +106,7 @@ static void ble_wipe_thread_cb(){
 static void inference_a_thread_cb(){
   osThreadSetPriority(osThreadGetId(), osPriorityAboveNormal);
   while(true) {
-    ACTION act = ACTION_NONE
+    ACTION act = ACTION_NONE;
     
     inf_flags.wait_all(INF_FLAG_DATA_A, osWaitForever, false);
 
@@ -227,7 +201,7 @@ void setup() {
   // setup each device
   emg_setup();
   imu_setup();
-  ble_setup();
+  ble_peripheral_setup();
   inference_setup();
 
   // create ble thread
@@ -244,10 +218,11 @@ void setup() {
   sensor_flags.set(SENSOR_FLAG_BLE_AVAILABLE);
 
   // start timer
-  if (!(ITimer0.attachInterruptInterval(TIMER_INTERVAL_US, timer_handler))){
+  if (!(ITimer0.attachInterruptInterval(sampling_period_us, timer_handler))){
     Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
   }
 }
 
 void loop() {
+  ble_peripheral_loop();
 }
