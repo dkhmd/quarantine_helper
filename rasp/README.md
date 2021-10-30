@@ -74,7 +74,7 @@ sudo python dummy_gateway.py --interval 5 --cert certs/certificate.pem.crt --key
 <br>
 
 ## publish.py
-上記 [gateway.py](#gatewaypy) からモジュールとして呼び出されることを想定しており、AWS IoTにデータを送るプログラム  
+AWS IoTにデータを送るプログラム。上記 [gateway.py](#gatewaypy) からモジュールとして呼び出されることを想定している  
 単独での実行時はテストが可能
 ### ライブラリ
 - awsiotsdk
@@ -95,7 +95,7 @@ python publish.py --cert certs/certificate.pem.crt --key certs/private.pem.key -
 <br>
 
 ## ibscanner.py
-上記[gateway.py](#gatewaypy)からモジュールとして呼び出されることを想定しており、iBeaconを検出するプログラム  
+iBeaconを検出するプログラム。上記[gateway.py](#gatewaypy)からモジュールとして呼び出されることを想定している  
 単独での実行時はテストが可能
 ### 事前準備
 - sudo apt-get install python3-dev libbluetooth-dev libcap2-bin
