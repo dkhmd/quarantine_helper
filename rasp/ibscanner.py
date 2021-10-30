@@ -17,7 +17,6 @@ class iBeacon():
             device_filter=IBeaconFilter(uuid=self.uuid)
         )
 
-
     def get_info(self):
         return self.current_dict
 
@@ -52,7 +51,7 @@ class iBeacon():
         thread.start()
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='python3 ibscanner.py uuid  interval')
+    parser = argparse.ArgumentParser(description='sudo python3 ibscanner.py uuid  interval')
 
     parser.add_argument('--uuid', default='00000000-e132-1001-b000-001c4de2af03', help='uuid')
     parser.add_argument('-i', '--interval', default=1, help='interval(sec)')

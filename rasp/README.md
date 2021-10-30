@@ -44,14 +44,32 @@ sudo python gateway.py --cert certs/certificate.pem.crt --key certs/private.pem.
 ### 注意
 - 証明書などを誤ってコミットしないこと  
 テストする際は証明書などはgit管理下以外、もしくは.gitignoreされているcertsディレクトリ以下に保管した上でテストすること
-- 事前に `aws configure` を[設定](https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-configure-quickstart.html)しておくこと
+
+## dummy_gateway.py
+ダミーの動作判定結果を内部で生成し、Beacon端末からのRSSIと結合してAWS IoT Coreに送る検証用プログラム  
+以下のダミーデータを生成し、JSONデータに格納する
+- address: `01:23:45:67:89:AB`
+- action: `none` もしくは `touch` もしくは `wipe` の中からランダム  
+AWS IoT Coreには常に `device/0123456789AB/data` の Topicを送信する  
+内部で [publish.py](#publishpy) と [ibscanner.py](#ibscannerpy) をモジュールとして使用している
+### 事前準備
+- sudo apt-get install python3-pip libglib2.0-dev
+### ライブラリ
+- awsiotsdk
+- beacontools
+### 使い方
 ```bash
-$ aws configure
-AWS Access Key ID [None]: アクセスキー
-AWS Secret Access Key [None]: シークレットアクセスキー
-Default region name [None]: ap-northeast-1
-Default output format [None]: json
+sudo python dummy_gateway.py --interval 5 --cert certs/certificate.pem.crt --key certs/private.pem.key --root certs/root.pem --topic test/testing --ep endpoint.iot.ap-northeast-1.amazonaws.com
 ```
+### 引数
+- interval: AWS IoT への送信間隔(秒)、省略時は5秒
+- cert: AWS IoT デバイス証明書のファイルパス
+- key: AWS IoT プライベートキーのファイルパス
+- root: AWS IoT ルート CA 証明書のファイルパス
+- ep: AWS IoT エンドポイント
+### 注意
+- 証明書などを誤ってコミットしないこと  
+テストする際は証明書などはgit管理下以外、もしくは.gitignoreされているcertsディレクトリ以下に保管した上でテストすること
 
 ## publish.py
 上記 [gateway.py](#gatewaypy) からモジュールとして呼び出されることを想定しており、AWS IoTにデータを送るプログラム  
