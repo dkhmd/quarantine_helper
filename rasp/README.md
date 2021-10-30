@@ -9,6 +9,7 @@
 - 以下のPythonライブラリをインストールする
   - sudo pip3 install --upgrade pip
   - sudo pip3 install bluepy awsiotsdk beacontools
+- [AWS CLIを設定する](https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-configure-quickstart.html)
 
 # プログラム
 全てのプログラムはpython3.5以降での実行を前提としている
