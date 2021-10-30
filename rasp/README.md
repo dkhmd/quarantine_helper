@@ -47,7 +47,7 @@ sudo python gateway.py --cert certs/certificate.pem.crt --key certs/private.pem.
 <br>
 
 ## dummy_gateway.py
-ダミーの動作判定結果を内部で生成し、Beacon端末からのRSSIと結合してAWS IoT Coreに送る検証用プログラム  
+ダミーの動作判定結果を内部で生成し、Beacon端末からのRSSIと結合してAWS IoT Coreに送る検証用プログラム。Arduino無しで動く  
 以下のダミーデータを生成し、JSONデータに格納する
 - address: `01:23:45:67:89:AB`
 - action: `none` もしくは `touch` もしくは `wipe` の中からランダム  
