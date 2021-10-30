@@ -44,6 +44,7 @@ sudo python gateway.py --cert certs/certificate.pem.crt --key certs/private.pem.
 ### 注意
 - 証明書などを誤ってコミットしないこと  
 テストする際は証明書などはgit管理下以外、もしくは.gitignoreされているcertsディレクトリ以下に保管した上でテストすること
+<br>
 
 ## dummy_gateway.py
 ダミーの動作判定結果を内部で生成し、Beacon端末からのRSSIと結合してAWS IoT Coreに送る検証用プログラム  
@@ -70,6 +71,7 @@ sudo python dummy_gateway.py --interval 5 --cert certs/certificate.pem.crt --key
 ### 注意
 - 証明書などを誤ってコミットしないこと  
 テストする際は証明書などはgit管理下以外、もしくは.gitignoreされているcertsディレクトリ以下に保管した上でテストすること
+<br>
 
 ## publish.py
 上記 [gateway.py](#gatewaypy) からモジュールとして呼び出されることを想定しており、AWS IoTにデータを送るプログラム  
@@ -90,7 +92,7 @@ python publish.py --cert certs/certificate.pem.crt --key certs/private.pem.key -
 ### 注意
 - 証明書などを誤ってコミットしないこと  
 テストする際は証明書などはgit管理下以外、もしくは.gitignoreされているcertsディレクトリ以下に保管した上でテストすること
-
+<br>
 
 ## ibscanner.py
 上記[gateway.py](#gatewaypy)からモジュールとして呼び出されることを想定しており、iBeaconを検出するプログラム  
