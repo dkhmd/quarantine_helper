@@ -2,9 +2,13 @@
 - [OSはraspbianをインストールする](https://qiita.com/tksnkym/items/31a237e27cbc51790cdd)
 - [初期設定をする](https://qiita.com/HeRo/items/c1c30d7267faeb304538)
 - [python をデフォルト3にする](https://www.ingenious.jp/articles/howto/raspberry-pi-howto/python-3-change/)
-
-以降のプログラムに対して、ライブラリはpipコマンドでインストールする  
-例) `pip3 install bluepy` 
+- 以下のパッケージをインストールする
+  - sudo apt-get install python3-pip libglib2.0-dev
+  - sudo apt-get install python3-dev libbluetooth-dev libcap2-bin
+  - sudo setcap 'cap_net_raw,cap_net_admin+eip' "\$(readlink -f "\$(which python3)")"
+- 以下のPythonライブラリをインストールする
+  - sudo pip3 install --upgrade pip
+  - sudo pip3 install bluepy awsiotsdk beacontools
 
 # プログラム
 全てのプログラムはpython3.5以降での実行を前提としている
@@ -16,7 +20,7 @@
 AWS IoT Coreには `device/Arduinoのアドレス/data` の Topicを送信する  
 内部で [publish.py](#publishpy) と [scanner.py](#scannerpy) をモジュールとして使用している
 ### 事前準備
-- apt-get install python3-pip libglib2.0-dev
+- sudo apt-get install python3-pip libglib2.0-dev
 ### ライブラリ
 - bluepy
 - awsiotsdk
@@ -43,7 +47,7 @@ Default output format [None]: json
 ```
 
 ## publish.py
-上記[gateway.py](#gatewaypy)からモジュールとして呼び出されることを想定しており、AWS IoTにデータを送るプログラム  
+上記 [gateway.py](#gatewaypy) からモジュールとして呼び出されることを想定しており、AWS IoTにデータを送るプログラム  
 単独での実行時はテストが可能
 ### ライブラリ
 - awsiotsdk
@@ -71,7 +75,7 @@ Default output format [None]: json
 ```
 
 ## scanner.py
-上記[gateway.py](#gatewaypy)からモジュールとして呼び出されることを想定しており、iBeaconを検出するプログラム  
+上記 [gateway.py](#gatewaypy) からモジュールとして呼び出されることを想定しており、iBeaconを検出するプログラム  
 単独での実行時はテストが可能
 ### ライブラリ
 - beacontools
