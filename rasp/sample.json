@@ -5,14 +5,23 @@
   "beacon": [
       {
           "address": "01:23:45:ab:cd:ef",
+          "uuid": "00000000-e123-4567-b890-abcdef012345",
+          "major": 1,
+          "minor": 1,
           "rssi": -90
       },
       {
           "address": "67:89:10:11:12:13",
+          "uuid": "00000000-efed-cba0-b987-6543210fedcb",
+          "major": 1,
+          "minor": 2,
           "rssi": 123
       },
       {
           "address": "99:98:97:96:95:94",
+          "uuid": "00000000-e132-1001-b000-001c4de2af03",
+          "major": 1,
+          "minor": 3,
           "rssi": 14
       }
   ],

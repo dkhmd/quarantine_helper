@@ -6,7 +6,7 @@
   - `sudo apt-get install python3-pip libglib2.0-dev`
   - `sudo apt-get install python3-dev libbluetooth-dev libcap2-bin`
   - `sudo setcap 'cap_net_raw,cap_net_admin+eip' "\$(readlink -f "\$(which python3)")"`
-- 以下のPythonライブラリをインストールする
+- 以下のPythonライブラリをインストールする(必ずsudoをつけること)
   - `sudo pip3 install --upgrade pip`
   - `sudo pip3 install bluepy awsiotsdk beacontools`
 - [AWS CLIを設定する](https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-configure-quickstart.html)
@@ -82,14 +82,17 @@ Default output format [None]: json
 ```
 
 ## scanner.py
-上記 [gateway.py](#gatewaypy) からモジュールとして呼び出されることを想定しており、iBeaconを検出するプログラム  
+上記[gateway.py](#gatewaypy)からモジュールとして呼び出されることを想定しており、iBeaconを検出するプログラム  
 単独での実行時はテストが可能
+### 事前準備
+- sudo apt-get install python3-dev libbluetooth-dev libcap2-bin
+- sudo setcap 'cap_net_raw,cap_net_admin+eip' "$(readlink -f "$(which python3)")"
 ### ライブラリ
-- beacontools
+- beacontools[scan]
 ### 使い方
 ```bash
-python scanner.py --major 1 --minor 1
+sudo python scanner.py --uuid 00000000-e132-1001-b000-001c4de2af03 --interval 1
 ```
 ### 引数
-- major: iBeaconのmajor値、省略時は1
-- minor: iBeaconのminor値、省略時は1
+- uuid: スキャンするiBeaconのUUID、デフォルトは00000000-e132-1001-b000-001c4de2af03
+- interval: スキャンの間隔(秒)、省略時は1秒

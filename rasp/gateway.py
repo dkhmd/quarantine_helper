@@ -5,6 +5,7 @@ from datetime import datetime as dt
 from bluepy import btle
 from bluepy.btle import Scanner, DefaultDelegate, BTLEException
 import publish
+import ibscanner
 
 ACTION_TOUCH = b'\x01'
 ACTION_WIPE = b'\x02'
@@ -13,6 +14,7 @@ GESTURE_SERVICE_UUID = "c14debb0-38a7-11ec-ba9c-93b3f272a4e7"
 GESTURE_CHARACTERISTIC_UUID = "c14debb1-38a7-11ec-ba9c-93b3f272a4e7"
 
 devaddr = None
+ibnfo = {}
 
 def prettify(mac_string):
     return ':'.join('%02x' % b for b in mac_string)
@@ -35,9 +37,18 @@ class NotifyDelegate(DefaultDelegate):
         dict_data = {}
         dict_data['date'] = now.strftime('%Y-%m-%d %H:%M:%S')
         dict_data['address'] = devaddr
-        # TBD
-        dict_data['number_of_beacon'] = 0
+
+        dict_data['number_of_beacon'] = len(ibnfo)
         dict_data['beaon'] = []
+        for k, v in ibnfo.items():
+            binfo = {}
+            binfo['address'] = k
+            binfo['rssi'] = v[0]
+            binfo['major'] = v[1]['major']
+            binfo['minor'] = v[1]['minor']
+            binfo['uuid'] = v[1]['uuid']
+            dict_data['beaon'].append(binfo)
+
         dict_data['action'] = convAction(data)
 
         topic = 'device/' + devaddr.replace(':', '') + '/data'
@@ -53,6 +64,9 @@ if __name__ == "__main__":
     parser.add_argument('-e', '--ep', required=True, help='endpoint')
 
     args = parser.parse_args()
+
+    ib = ibscanner.iBeacon()
+    # ib.start_scan()
 
     while True:
         try:
@@ -81,8 +95,8 @@ if __name__ == "__main__":
 
                 while True:
                     # wait for notifications
-                    if peri.waitForNotifications(1.0):
-                        continue                    
+                    ibnfo = ib.exec_scan()
+                    peri.waitForNotifications(1.0)
 
         except BTLEException:
             print('BTLE Exception while scannning.')
