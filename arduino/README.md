@@ -34,5 +34,5 @@ PCとArduinoをUSBケーブルで接続した状態でArduino IDEを立ち上げ
 
 # 開発方法
 PCとArduinoを接続した状態でArduino IDEを立ち上げ、File -> Open -> main.ino を選択すると全てのソースコードが展開される。  
-Tools -> Serial Monitor や Serial Plotter でデバッグ文やプロット図がリアルタイムに確認できる。その他はググる。
+Tools -> Serial Monitor や Serial Plotter でデバッグ文やプロット図がリアルタイムに確認できる(Baud Rateは115200)。その他はググる。
 
