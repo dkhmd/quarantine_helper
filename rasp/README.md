@@ -2,15 +2,21 @@
 - [OSはraspbianをインストールする](https://qiita.com/tksnkym/items/31a237e27cbc51790cdd)
 - [初期設定をする](https://qiita.com/HeRo/items/c1c30d7267faeb304538)
 - [python をデフォルト3にする](https://www.ingenious.jp/articles/howto/raspberry-pi-howto/python-3-change/)
-- 以下のパッケージをインストールする
-  - sudo apt-get install python3-pip libglib2.0-dev
-  - sudo apt-get install python3-dev libbluetooth-dev libcap2-bin
-  - sudo setcap 'cap_net_raw,cap_net_admin+eip' "\$(readlink -f "\$(which python3)")"
+- 以下のパッケージをインストール・設定する
+  - `sudo apt-get install python3-pip libglib2.0-dev`
+  - `sudo apt-get install python3-dev libbluetooth-dev libcap2-bin`
+  - `sudo setcap 'cap_net_raw,cap_net_admin+eip' "\$(readlink -f "\$(which python3)")"`
 - 以下のPythonライブラリをインストールする
-  - sudo pip3 install --upgrade pip
-  - sudo pip3 install bluepy awsiotsdk beacontools
+  - `sudo pip3 install --upgrade pip`
+  - `sudo pip3 install bluepy awsiotsdk beacontools`
 - [AWS CLIを設定する](https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-configure-quickstart.html)
-
+```bash
+$ aws configure
+AWS Access Key ID [None]: アクセスキー
+AWS Secret Access Key [None]: シークレットアクセスキー
+Default region name [None]: ap-northeast-1
+Default output format [None]: json
+```
 # プログラム
 全てのプログラムはpython3.5以降での実行を前提としている
 ## gateway.py
