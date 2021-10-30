@@ -4,15 +4,19 @@
 - [python をデフォルト3にする](https://www.ingenious.jp/articles/howto/raspberry-pi-howto/python-3-change/)
 
 以降のプログラムに対して、ライブラリはpipコマンドでインストールする  
-例) `pip install pybleno` 
+例) `pip3 install bluepy` 
 
 # プログラム
 全てのプログラムはpython3.5以降での実行を前提としている
 ## gateway.py
-ArduinoからBT経由で動作判定結果と位置情報を受け取り、AWS IoT Coreに送る本番用プログラム  
-ArdunoがCentral、Raspberry PiがPeripheralとして動く  
+以下の情報を集約し、AWS IoT Coreに送る本番用プログラム。Raspberry PiがCentralとして動く。  
+AWS IoT Coreには `device/Arduinoのアドレス/data` の Topicを送信する
+- Arduinoからの動作判定結果
+- Beacon端末からのRSSI
+### 事前準備
+- apt-get install python3-pip libglib2.0-dev
 ### ライブラリ
-- pybleno
+- bluepy
 - awsiotsdk
 ### 使い方
 ```bash
@@ -51,46 +55,16 @@ AWS Secret Access Key [None]: シークレットアクセスキー
 Default region name [None]: ap-northeast-1
 Default output format [None]: json
 ```
-<br>
 
-# BLEデバイスの見つけ方
-1. iPhoneに[BLE Scanner](https://apps.apple.com/us/app/ble-scanner-4-0/id1221763603)などをインストールし、ConnectしてBeacon端末のLocal NameやService UUIDsを確認する  
-![image](https://user-images.githubusercontent.com/16249131/139071362-9d09a2d4-a002-4801-8054-dce032bdeaa3.png)
-2. ラズパイにログインし、BLEサービスが `active(running)` になっていることを確認する
+## scanner.py
+上記gateway.pyからモジュールとして呼び出されることを想定しており、iBeaconを検出するプログラム  
+単独での実行時はテストが可能
+### ライブラリ
+- beacontools
+### 使い方
 ```bash
-$ sudo systemctl status bluetooth
-● bluetooth.service - Bluetooth service
-   Loaded: loaded (/lib/systemd/system/bluetooth.service; enabled; vendor preset: enabled)
-   Active: active (running) since 土 2021-10-23 19:49:55 JST; 4 days ago
-     Docs: man:bluetoothd(8)
- Main PID: 836 (bluetoothd)
-   Status: "Running"
-   CGroup: /system.slice/bluetooth.service
-           └─836 /usr/lib/bluetooth/bluetoothd
+python scanner.py --major 1 --minor 1
 ```
-3. ラズパイ上でBLEのスキャンを開始する
-```bash
-$ sudo bluetoothctl
-[bluetooth]# scan on
-```
-4. ラズパイ上でBeacon端末がスキャンされることを確認する
-```bash
-...
-[NEW] Device 00:1C:4D:45:4E:04
-...
-```
-5. ラズパイ上でBeacon端末に対して情報を取得し、1. の内容とVerifyする
-```bash
-[bluetooth]# info 00:1C:4D:45:4E:04
-Device 00:1C:4D:45:4E:04
-	Name:
-	Alias:
-	Paired: no
-	Trusted: no
-	Blocked: no
-	Connected: no
-	LegacyPairing: no
-	UUID: Vendor specific           (fe8a9e37-24f6-4800-8cb4-067c08dc776b)
-	UUID: Unknown                   (0000fef8-0000-1000-8000-00805f9b34fb)
-	RSSI: -94
-```
+### 引数
+- major: iBeaconのmajor値、省略時は1
+- minor: iBeaconのminor値、省略時は1

@@ -31,15 +31,14 @@ def publish(endpoint, cert, key, root, dict_data, topic):
                 clean_session=False,
                 keep_alive_secs=6
                 )
-    print("Connecting to {} with client ID '{}'...".format(
-            ENDPOINT, CLIENT_ID))
+#    print("Connecting to {} with client ID '{}'...".format(ENDPOINT, CLIENT_ID))
     # Make the connect() call
     connect_future = mqtt_connection.connect()
     # Future.result() waits until a result is available
     connect_future.result()
-    print("Connected!")
+#    print("Connected!")
     # Publish message to server desired number of times.
-    print('Begin Publish')
+#   print('Begin Publish')
     mqtt_connection.publish(topic=TOPIC, payload=json.dumps(dict_data), qos=mqtt.QoS.AT_LEAST_ONCE)
     print("Published: '" + json.dumps(dict_data) + "' to the topic: " + topic)
     disconnect_future = mqtt_connection.disconnect()
