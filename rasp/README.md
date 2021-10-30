@@ -25,7 +25,7 @@ Default output format [None]: json
 - Beacon端末からのRSSI
 
 AWS IoT Coreには `device/Arduinoのアドレス/data` の Topicを送信する  
-内部で [publish.py](#publishpy) と [scanner.py](#scannerpy) をモジュールとして使用している
+内部で [publish.py](#publishpy) と [ibscanner.py](#ibscannerpy) をモジュールとして使用している
 ### 事前準備
 - sudo apt-get install python3-pip libglib2.0-dev
 ### ライブラリ
@@ -81,7 +81,7 @@ Default region name [None]: ap-northeast-1
 Default output format [None]: json
 ```
 
-## scanner.py
+## ibscanner.py
 上記[gateway.py](#gatewaypy)からモジュールとして呼び出されることを想定しており、iBeaconを検出するプログラム  
 単独での実行時はテストが可能
 ### 事前準備
@@ -91,7 +91,7 @@ Default output format [None]: json
 - beacontools[scan]
 ### 使い方
 ```bash
-sudo python scanner.py --uuid 00000000-e132-1001-b000-001c4de2af03 --interval 1
+sudo python ibscanner.py --uuid 00000000-e132-1001-b000-001c4de2af03 --interval 1
 ```
 ### 引数
 - uuid: スキャンするiBeaconのUUID、デフォルトは00000000-e132-1001-b000-001c4de2af03
