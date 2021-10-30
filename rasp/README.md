@@ -9,15 +9,18 @@
 # プログラム
 全てのプログラムはpython3.5以降での実行を前提としている
 ## gateway.py
-以下の情報を集約し、AWS IoT Coreに送る本番用プログラム。Raspberry PiがCentralとして動く。  
-AWS IoT Coreには `device/Arduinoのアドレス/data` の Topicを送信する
+以下の情報を集約しAWS IoT Coreに送る本番用プログラム。Raspberry PiがCentralとして動く  
 - Arduinoからの動作判定結果
 - Beacon端末からのRSSI
+
+AWS IoT Coreには `device/Arduinoのアドレス/data` の Topicを送信する  
+内部で [publish.py](#publishpy) と [scanner.py](#scannerpy) をモジュールとして使用している
 ### 事前準備
 - apt-get install python3-pip libglib2.0-dev
 ### ライブラリ
 - bluepy
 - awsiotsdk
+- beacontools
 ### 使い方
 ```bash
 sudo python gateway.py --cert certs/certificate.pem.crt --key certs/private.pem.key --root certs/root.pem --topic test/testing --ep endpoint.iot.ap-northeast-1.amazonaws.com
@@ -27,9 +30,20 @@ sudo python gateway.py --cert certs/certificate.pem.crt --key certs/private.pem.
 - key: AWS IoT プライベートキーのファイルパス
 - root: AWS IoT ルート CA 証明書のファイルパス
 - ep: AWS IoT エンドポイント
+### 注意
+- 証明書などを誤ってコミットしないこと  
+テストする際は証明書などはgit管理下以外、もしくは.gitignoreされているcertsディレクトリ以下に保管した上でテストすること
+- 事前に `aws configure` を[設定](https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-configure-quickstart.html)しておくこと
+```bash
+$ aws configure
+AWS Access Key ID [None]: アクセスキー
+AWS Secret Access Key [None]: シークレットアクセスキー
+Default region name [None]: ap-northeast-1
+Default output format [None]: json
+```
 
 ## publish.py
-上記gateway.pyからモジュールとして呼び出されることを想定しており、AWS IoTにデータを送るプログラム  
+上記[gateway.py](#gatewaypy)からモジュールとして呼び出されることを想定しており、AWS IoTにデータを送るプログラム  
 単独での実行時はテストが可能
 ### ライブラリ
 - awsiotsdk
@@ -57,7 +71,7 @@ Default output format [None]: json
 ```
 
 ## scanner.py
-上記gateway.pyからモジュールとして呼び出されることを想定しており、iBeaconを検出するプログラム  
+上記[gateway.py](#gatewaypy)からモジュールとして呼び出されることを想定しており、iBeaconを検出するプログラム  
 単独での実行時はテストが可能
 ### ライブラリ
 - beacontools
