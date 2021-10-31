@@ -1,21 +1,49 @@
 #include "dust.h"
 
-void dust_setup(int pin) {
-  pinMode(pin, INPUT);
+#define DUST_SAMPLING_MS  30000
+
+unsigned long t0;
+
+static double pcs2ugm3 (double pcs)
+{
+  double pi = 3.14159;
+  double density = 1.65 * pow (10, 12);
+  double r25 = 2.5 * pow (10, -6);
+  double vol25 = (4/3) * pi * pow (r25, 3);
+  double mass25 = density * vol25; // μg
+  double K = 3531.5; // per m^3 
+
+  return pcs * K * mass25;
 }
 
-float dust_read(int pin, unsigned long sampletime_ms) { 
-  unsigned long duration = 0;
-  unsigned long lowpulseoccupancy = 0;
-  float ratio = 0;
+void dust_setup(int pin) {
+  pinMode(pin, INPUT);
+  t0 = millis();
+}
 
-  float concentration = 0;
+bool dust_read(int pin, double *dust) {
+  double concent = 0;
+  unsigned long ts = DUST_SAMPLING_MS; // 30000ms
+  unsigned long lowOc = 0;
+  double ratio = 0;
 
-  duration = pulseIn(pin, LOW);
-  lowpulseoccupancy = lowpulseoccupancy + duration;
+  // LOW occupancy
+  lowOc += pulseIn(pin, LOW);
 
-  ratio = lowpulseoccupancy / (sampletime_ms * 10.0);
-  concentration = 1.1 * pow(ratio, 3) - 3.8 * pow(ratio, 2) + 520 * ratio + 0.62;
+  // Sampling
+  if((millis() - t0) <= ts) {
+    return false;
+  }
 
-  return concentration;
+  // LOW Ratio
+  ratio = lowOc / (ts * 10.0);
+  // Calculate Content
+  concent = 1.1 * pow(ratio, 3) - 3.8 * pow(ratio, 2) + 520 * ratio + 0.62;
+
+  *dust = pcs2ugm3(concent);
+
+  lowOc = 0;
+  t0 = millis();
+
+  return true;
 }

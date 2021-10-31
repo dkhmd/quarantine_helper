@@ -3,7 +3,6 @@
 void temperature_setup() {
   if (!HTS.begin()) {
     Serial.println("Failed to initialize humidity temperature sensor!");
-    while (1);
   }
 }
 

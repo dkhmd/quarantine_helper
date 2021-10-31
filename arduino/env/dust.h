@@ -4,6 +4,6 @@
 #include <Arduino.h>
 
 void dust_setup(int pin);
-float dust_read(int pin, unsigned long sampletime_ms);
+bool dust_read(int pin, double *dust);
 
 #endif
