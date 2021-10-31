@@ -4,6 +4,6 @@
 #include <Arduino.h>
 
 void dust_setup(int pin);
-bool dust_read(int pin, double *dust);
+bool dust_read(int pin, unsigned long ts, double *dust);
 
 #endif

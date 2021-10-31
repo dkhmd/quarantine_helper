@@ -1,7 +1,5 @@
 #include "dust.h"
 
-#define DUST_SAMPLING_MS  30000
-
 unsigned long t0;
 
 static double pcs2ugm3 (double pcs)
@@ -18,22 +16,15 @@ static double pcs2ugm3 (double pcs)
 
 void dust_setup(int pin) {
   pinMode(pin, INPUT);
-  t0 = millis();
 }
 
-bool dust_read(int pin, double *dust) {
+bool dust_read(int pin, unsigned long ts, double *dust) {
   double concent = 0;
-  unsigned long ts = DUST_SAMPLING_MS; // 30000ms
   unsigned long lowOc = 0;
   double ratio = 0;
 
   // LOW occupancy
-  lowOc += pulseIn(pin, LOW);
-
-  // Sampling
-  if((millis() - t0) <= ts) {
-    return false;
-  }
+  lowOc = pulseIn(pin, LOW);
 
   // LOW Ratio
   ratio = lowOc / (ts * 10.0);
@@ -41,9 +32,6 @@ bool dust_read(int pin, double *dust) {
   concent = 1.1 * pow(ratio, 3) - 3.8 * pow(ratio, 2) + 520 * ratio + 0.62;
 
   *dust = pcs2ugm3(concent);
-
-  lowOc = 0;
-  t0 = millis();
 
   return true;
 }

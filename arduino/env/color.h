@@ -4,6 +4,6 @@
 #include <Arduino_APDS9960.h>
 
 void color_setup();
-bool color_read(int* r, int* g, int* b);
+bool color_read(int* r, int* g, int* b, int* a);
 
 #endif

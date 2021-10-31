@@ -6,12 +6,12 @@ void color_setup() {
   }
 }
 
-bool color_read(int* r, int* g, int* b) {
+bool color_read(int* r, int* g, int* b, int* a) {
   while (! APDS.colorAvailable()) {
     return false;
   }
 
-  APDS.readColor(*r, *g, *b);
+  APDS.readColor(*r, *g, *b, *a);
 
   return true;
 }
