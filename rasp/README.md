@@ -24,7 +24,7 @@ Default output format [None]: json
 - Arduinoからの動作判定結果
 - Beacon端末からのRSSI
 
-AWS IoT Coreには `device/Arduinoのアドレス/data` の Topicを送信する  
+AWS IoT Coreには `device/Arduinoのアドレス/data(例: device/85a5ca785ca4/data)` の Topicを送信する  
 内部で [publish.py](#publishpy) と [ibscanner.py](#ibscannerpy) をモジュールとして使用している
 ### 事前準備
 - sudo apt-get install python3-pip libglib2.0-dev
@@ -34,7 +34,7 @@ AWS IoT Coreには `device/Arduinoのアドレス/data` の Topicを送信する
 - beacontools
 ### 使い方
 ```bash
-sudo python gateway.py --cert certs/certificate.pem.crt --key certs/private.pem.key --root certs/root.pem --topic test/testing --ep endpoint.iot.ap-northeast-1.amazonaws.com
+sudo python gateway.py --cert certs/certificate.pem.crt --key certs/private.pem.key --root certs/root.pem --ep endpoint.iot.ap-northeast-1.amazonaws.com
 ```
 ### 引数
 - cert: AWS IoT デバイス証明書のファイルパス
