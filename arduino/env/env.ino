@@ -12,7 +12,8 @@
 #include "ble_peripheral.h"
 
 #define dustPin             11
-#define SAMPLING_PERIOD_US  (30 * 1000 * 1000)
+#define SAMPLING_PERIOD_US  (1 * 1000 * 1000)
+#define SAMPLING_TIMES      30
 
 #define FLAG_TMR_AVAILABLE   (1UL << 0)
 
@@ -24,6 +25,7 @@ using namespace rtos;
 
 
 /*** Variables ***/
+int               sampling_cnt = 0;
 Thread            sensor_thread;
 EventFlags        tmr_flags;
 
@@ -64,6 +66,15 @@ static void sensor_thread_cb() {
   
     double dust = 0;
     static double prev_dust = 0;
+
+    sampling_cnt++;
+    if (sampling_cnt < SAMPLING_TIMES){
+        voc_read(&voc);
+        tmr_flags.clear(FLAG_TMR_AVAILABLE);
+        continue;
+    }else {
+      sampling_cnt = 0;
+    }
   
   //  // Temperature and Humidity
   //  if(temperature_read(&temperature, &humidity) != true) {
