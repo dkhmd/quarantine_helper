@@ -28,7 +28,7 @@ def publish_routine(peri):
         now = dt.now()
         dict_data['date'] = now.strftime('%Y-%m-%d %H:%M:%S')
         dict_data['address'] = devaddr
-
+        dict_data['room'] = args.position
         charas = peri.getCharacteristics()
         for chara in charas:
             if chara.uuid == TEMPERATURE_CHARACTERISTIC_UUID:
@@ -47,7 +47,7 @@ def publish_routine(peri):
                 dict_data['dust'] = struct.unpack('<d', chara.read())[0]
 
         print(dict_data)
-        topic = 'device/' + devaddr.replace(':', '') + '/data'
+        topic = 'device/' + devaddr.replace(':', '') + '/envdata'
         publish.publish(endpoint=args.ep, cert=args.cert, key=args.key, root=args.root, dict_data=dict_data, topic=topic)
         sleep(30)
 
@@ -58,6 +58,7 @@ if __name__ == "__main__":
     parser.add_argument('-k', '--key', required=True, help='key file path')
     parser.add_argument('-r', '--root', required=True, help='root file path')
     parser.add_argument('-e', '--ep', required=True, help='endpoint')
+    parser.add_argument('-p', '--position', required=True, help='position')
 
     args = parser.parse_args()
 
