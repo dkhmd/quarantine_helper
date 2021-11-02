@@ -11,9 +11,11 @@
 #include "dust.h"
 #include "ble_peripheral.h"
 
-#define dustPin             11
+#define DUSTPIN             D11
+#define DUST_SAMPLING_MS    (30 * 1000)
+
 #define SAMPLING_PERIOD_US  (1 * 1000 * 1000)
-#define SAMPLING_TIMES      30
+#define SAMPLING_TIMES      60
 
 #define FLAG_TMR_AVAILABLE   (1UL << 0)
 
@@ -28,6 +30,9 @@ using namespace rtos;
 int               sampling_cnt = 0;
 Thread            sensor_thread;
 EventFlags        tmr_flags;
+  
+double g_dust = 0;
+float g_temperature = 0;
 
 // Init NRF52 timer NRF_TIMER3
 NRF52_MBED_Timer  ITimer0(NRF_TIMER_3);
@@ -41,7 +46,7 @@ void timer_handler()
 
 /*** Functions ***/
 static void sensor_thread_cb() {
-  osThreadSetPriority(osThreadGetId(), osPriorityNormal);
+  osThreadSetPriority(osThreadGetId(), osPriorityAboveNormal);
 
   while(true){
     tmr_flags.wait_all(FLAG_TMR_AVAILABLE, osWaitForever, false);
@@ -63,16 +68,20 @@ static void sensor_thread_cb() {
   
     uint16_t co2_ndir = 0;
     static uint16_t prev_co2_ndir = 0;
-  
-    double dust = 0;
-    static double prev_dust = 0;
 
     sampling_cnt++;
     if (sampling_cnt < SAMPLING_TIMES){
-        voc_read(&voc);
+        uint16_t tmp_co2_ndir = 0;
+        // voc
+        voc_read(&prev_voc);
         tmr_flags.clear(FLAG_TMR_AVAILABLE);
+
+        // co2(ndir)
+        if((sampling_cnt % 2) == 0) {
+          co2_ndir_read(&prev_co2_ndir);
+        }
         continue;
-    }else {
+    } else {
       sampling_cnt = 0;
     }
   
@@ -114,6 +123,7 @@ static void sensor_thread_cb() {
   
     // CO2(PAS)
     if(co2_pas_read(&co2_pas, &co2_pas_temperature, &co2_pas_humidity) == true) {
+      g_temperature = co2_pas_temperature;
       ble_peripheral_notify_temperature(co2_pas_temperature);
       ble_peripheral_notify_humidity(co2_pas_humidity);
       ble_peripheral_notify_co2_pas(co2_pas);
@@ -139,14 +149,9 @@ static void sensor_thread_cb() {
     prev_co2_ndir = co2_ndir;
   
     // DUST
-//    if(dust_read(dustPin, SAMPLING_PERIOD_US/1000, &dust) == true) {
-//      ble_peripheral_notify_dust(dust);
-//    } else {
-//      dust = prev_dust;
-//    }
-//    Serial.print(", dust:");
-//    Serial.print(dust);
-//    prev_dust = dust;
+    ble_peripheral_notify_dust(g_dust);
+    Serial.print(", dust:");
+    Serial.print(g_dust);
   
     Serial.println("");
     tmr_flags.clear(FLAG_TMR_AVAILABLE);
@@ -160,6 +165,9 @@ void setup() {
   Serial.begin(115200);
   while (!Serial);
 
+  Serial1.begin(9600);
+  while (!Serial1);
+
   // initialize i2c
   Wire.begin();
 
@@ -169,7 +177,7 @@ void setup() {
   voc_setup();
   co2_pas_setup();
   co2_ndir_setup();
-  dust_setup(dustPin);
+  dust_setup(DUSTPIN);
 
   // ble
   ble_peripheral_setup();
@@ -187,5 +195,13 @@ void setup() {
 }
 
 void loop() {
+  double dust;
+  
   ble_peripheral_loop();
+
+  // sensors
+  // DUST
+  if(dust_read(DUSTPIN, DUST_SAMPLING_MS, g_temperature, &dust) == true) {
+    g_dust = dust;
+  }
 }

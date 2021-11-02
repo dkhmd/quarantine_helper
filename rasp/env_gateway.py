@@ -49,7 +49,7 @@ def publish_routine(peri):
         print(dict_data)
         topic = 'device/' + devaddr.replace(':', '') + '/envdata'
         publish.publish(endpoint=args.ep, cert=args.cert, key=args.key, root=args.root, dict_data=dict_data, topic=topic)
-        sleep(30)
+        sleep(60)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='sudo python3 gateway.py cert key root data endpoint')
