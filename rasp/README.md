@@ -100,6 +100,12 @@ iBeaconを検出するプログラム。上記[gateway.py](#gatewaypy)からモ�
 ### 事前準備
 - sudo apt-get install python3-dev libbluetooth-dev libcap2-bin
 - sudo setcap 'cap_net_raw,cap_net_admin+eip' "$(readlink -f "$(which python3)")"
+下記のエラーが出て動かない場合、追加でinstall
+    from bluetooth import _bluetooth as bluez
+ModuleNotFoundError: No module named 'bluetooth'
+- sudo apt-get install bluetooth libbluetooth-dev
+- sudo python3 -m pip install pybluez
+
 ### ライブラリ
 - beacontools[scan]
 ### 使い方
