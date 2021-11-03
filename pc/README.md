@@ -26,3 +26,13 @@ Default output format [None]: json
 ```
 - /tmp/data.csv に一時ファイルを保存するため、書き込み権限を渡しておくこと
 - プログラム内でシリアルデバイス名を直書しているため、デバイス名が異なる場合はプログラム内の `SERIAL_DEVICE_NAME` を所望のデバイス名に書き換えること
+
+## serial_disp.py
+Arduinoからのシリアル出力を表示するだけのプログラム  
+### ライブラリ
+- serial
+
+### 使い方
+```bash
+sudo python serial_disp.py
+```
