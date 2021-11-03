@@ -15,6 +15,7 @@ VOC_CHARACTERISTIC_UUID = "17bbb484-39fc-11ec-b844-039c3fbb664b"
 CO2_PAS_CHARACTERISTIC_UUID = "17bbb485-39fc-11ec-b844-039c3fbb664b"
 CO2_NDIR_CHARACTERISTIC_UUID = "17bbb486-39fc-11ec-b844-039c3fbb664b"
 DUST_CHARACTERISTIC_UUID = "17bbb487-39fc-11ec-b844-039c3fbb664b"
+PIR_CHARACTERISTIC_UUID = "17bbb488-39fc-11ec-b844-039c3fbb664b"
 
 devaddr = None
 ibnfo = {}
@@ -45,6 +46,8 @@ def publish_routine(peri):
                 dict_data['co2_ndir'] = int.from_bytes(chara.read(), 'little')
             elif chara.uuid == DUST_CHARACTERISTIC_UUID:
                 dict_data['dust'] = struct.unpack('<d', chara.read())[0]
+            elif chara.uuid == PIR_CHARACTERISTIC_UUID:
+                dict_data['pir'] = int.from_bytes(chara.read(), 'little')
 
         print(dict_data)
         topic = 'device/' + devaddr.replace(':', '') + '/envdata'
