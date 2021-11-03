@@ -9,10 +9,13 @@
 #include "co2_pas.h"
 #include "co2_ndir.h"
 #include "dust.h"
+#include "pir.h"
 #include "ble_peripheral.h"
 
-#define DUSTPIN             D11
+#define DUST_PIN            D11
 #define DUST_SAMPLING_MS    (30 * 1000)
+
+#define PIR_PIN             D8
 
 #define SAMPLING_PERIOD_US  (1 * 1000 * 1000)
 #define SAMPLING_TIMES      60
@@ -69,6 +72,9 @@ static void sensor_thread_cb() {
     uint16_t co2_ndir = 0;
     static uint16_t prev_co2_ndir = 0;
 
+    char pir = 0;
+    static unsigned char pir_cnt = 0;
+
     sampling_cnt++;
     if (sampling_cnt < SAMPLING_TIMES){
         uint16_t tmp_co2_ndir = 0;
@@ -79,6 +85,12 @@ static void sensor_thread_cb() {
         // co2(ndir)
         if((sampling_cnt % 2) == 0) {
           co2_ndir_read(&prev_co2_ndir);
+        }
+
+        // pir
+        pir_read(PIR_PIN, &pir);
+        if (pir != 0){
+          pir_cnt++;
         }
         continue;
     } else {
@@ -152,6 +164,16 @@ static void sensor_thread_cb() {
     ble_peripheral_notify_dust(g_dust);
     Serial.print(", dust:");
     Serial.print(g_dust);
+
+    // PIR
+    pir_read(PIR_PIN, &pir);
+    if (pir != 0){
+      pir_cnt++;
+    }
+    ble_peripheral_notify_pir(pir_cnt);
+    Serial.print(", pir:");
+    Serial.print(pir_cnt);
+    pir_cnt = 0;
   
     Serial.println("");
     tmr_flags.clear(FLAG_TMR_AVAILABLE);
@@ -177,7 +199,8 @@ void setup() {
   voc_setup();
   co2_pas_setup();
   co2_ndir_setup();
-  dust_setup(DUSTPIN);
+  dust_setup(DUST_PIN);
+  pir_setup(PIR_PIN);
 
   // ble
   ble_peripheral_setup();
@@ -201,7 +224,7 @@ void loop() {
 
   // sensors
   // DUST
-  if(dust_read(DUSTPIN, DUST_SAMPLING_MS, g_temperature, &dust) == true) {
+  if(dust_read(DUST_PIN, DUST_SAMPLING_MS, g_temperature, &dust) == true) {
     g_dust = dust;
   }
 }
