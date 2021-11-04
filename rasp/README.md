@@ -4,11 +4,11 @@
 - [python をデフォルト3にする](https://www.ingenious.jp/articles/howto/raspberry-pi-howto/python-3-change/)
 - 以下のパッケージをインストール・設定する
   - `sudo apt-get install python3-pip libglib2.0-dev`
-  - `sudo apt-get install python3-dev libbluetooth-dev libcap2-bin`
+  - `sudo apt-get install python3-dev bluetooth libbluetooth-dev libcap2-bin`
   - `sudo setcap 'cap_net_raw,cap_net_admin+eip' "\$(readlink -f "\$(which python3)")"`
 - 以下のPythonライブラリをインストールする(必ずsudoをつけること)
   - `sudo pip3 install --upgrade pip`
-  - `sudo pip3 install bluepy awsiotsdk beacontools`
+  - `sudo pip3 install pybluez bluepy awsiotsdk beacontools`
 - [AWS CLIを設定する](https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-configure-quickstart.html)
 ```bash
 $ aws configure
@@ -98,17 +98,11 @@ python publish.py --cert certs/certificate.pem.crt --key certs/private.pem.key -
 iBeaconを検出するプログラム。上記[gateway.py](#gatewaypy)からモジュールとして呼び出されることを想定している  
 単独での実行時はテストが可能
 ### 事前準備
-- sudo apt-get install python3-dev libbluetooth-dev libcap2-bin
+- sudo apt-get install python3-dev bluetooth libbluetooth-dev libcap2-bin
 - sudo setcap 'cap_net_raw,cap_net_admin+eip' "$(readlink -f "$(which python3)")"
-
-**from bluetooth import _bluetooth as bluez**  
-**ModuleNotFoundError: No module named 'bluetooth'**  
-上記のエラーが出て動かない場合、追加で下記も実施  
-- sudo apt-get install bluetooth libbluetooth-dev
-- sudo python3 -m pip install pybluez
-
 ### ライブラリ
 - beacontools[scan]
+- pybluez
 ### 使い方
 ```bash
 sudo python ibscanner.py --uuid 00000000-e132-1001-b000-001c4de2af03 --interval 1
