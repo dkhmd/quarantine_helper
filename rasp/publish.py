@@ -44,7 +44,7 @@ def publish(endpoint, cert, key, root, dict_data, topic):
         print("Published: '" + json.dumps(dict_data) + "' to the topic: " + topic)
         disconnect_future = mqtt_connection.disconnect()
         disconnect_future.result()
-    except awscrt.exceptions.AwsCrtError:
+    except:
         pass
 
 if __name__ == "__main__":
