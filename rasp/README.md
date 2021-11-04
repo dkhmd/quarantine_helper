@@ -8,7 +8,7 @@
   - `sudo setcap 'cap_net_raw,cap_net_admin+eip' "$(readlink -f "$(which python3)")"`
 - 以下のPythonライブラリをインストールする(必ずsudoをつけること)
   - `sudo pip3 install --upgrade pip`
-  - `sudo pip3 install pybluez bluepy awsiotsdk beacontools`
+  - `sudo pip3 install pybluez bluepy awsiotsdk`
 - [AWS CLIを設定する](https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-configure-quickstart.html)
 ```bash
 $ aws configure
