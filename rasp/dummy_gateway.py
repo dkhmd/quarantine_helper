@@ -6,7 +6,7 @@ import random
 import ibscanner
 
 devaddr = "01:23:45:67:89:AB"
-ibnfo = {}
+ibinfo = {}
 
 def prettify(mac_string):
     return ':'.join('%02x' % b for b in mac_string)
@@ -21,9 +21,9 @@ def pub():
     dict_data['date'] = now.strftime('%Y-%m-%d %H:%M:%S')
     dict_data['address'] = devaddr
 
-    dict_data['number_of_beacon'] = len(ibnfo)
+    dict_data['number_of_beacon'] = len(ibinfo)
     dict_data['beaon'] = []
-    for k, v in ibnfo.items():
+    for k, v in ibinfo.items():
         binfo = {}
         binfo['address'] = k
         binfo['rssi'] = v[0]
@@ -46,11 +46,12 @@ if __name__ == "__main__":
     parser.add_argument('-k', '--key', required=True, help='key file path')
     parser.add_argument('-r', '--root', required=True, help='root file path')
     parser.add_argument('-e', '--ep', required=True, help='endpoint')
+    parser.add_argument('-u', '--uuid', default='00000000-e132-1001-b000-001c4de2af03', help='uuid')
 
     args = parser.parse_args()
 
     while True:
-        ib = ibscanner.iBeacon()
-        ibnfo = ib.exec_scan()
+        ib = ibscanner.iBeacon(uuid=args.uuid)
+        ibinfo = ib.exec_scan()
         pub()
         sleep(args.interval)

@@ -5,7 +5,7 @@
 - 以下のパッケージをインストール・設定する
   - `sudo apt-get install python3-pip libglib2.0-dev`
   - `sudo apt-get install python3-dev bluetooth libbluetooth-dev libcap2-bin`
-  - `sudo setcap 'cap_net_raw,cap_net_admin+eip' "\$(readlink -f "\$(which python3)")"`
+  - `sudo setcap 'cap_net_raw,cap_net_admin+eip' "$(readlink -f "$(which python3)")"`
 - 以下のPythonライブラリをインストールする(必ずsudoをつけること)
   - `sudo pip3 install --upgrade pip`
   - `sudo pip3 install pybluez bluepy awsiotsdk beacontools`
@@ -41,6 +41,7 @@ sudo python gateway.py --cert certs/certificate.pem.crt --key certs/private.pem.
 - key: AWS IoT プライベートキーのファイルパス
 - root: AWS IoT ルート CA 証明書のファイルパス
 - ep: AWS IoT エンドポイント
+- uuid: スキャンするiBeaconのUUID、デフォルトは00000000-e132-1001-b000-001c4de2af03
 ### 注意
 - 証明書などを誤ってコミットしないこと  
 テストする際は証明書などはgit管理下以外、もしくは.gitignoreされているcertsディレクトリ以下に保管した上でテストすること
@@ -68,6 +69,7 @@ sudo python dummy_gateway.py --interval 5 --cert certs/certificate.pem.crt --key
 - key: AWS IoT プライベートキーのファイルパス
 - root: AWS IoT ルート CA 証明書のファイルパス
 - ep: AWS IoT エンドポイント
+- uuid: スキャンするiBeaconのUUID、デフォルトは00000000-e132-1001-b000-001c4de2af03
 ### 注意
 - 証明書などを誤ってコミットしないこと  
 テストする際は証明書などはgit管理下以外、もしくは.gitignoreされているcertsディレクトリ以下に保管した上でテストすること

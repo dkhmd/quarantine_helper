@@ -18,7 +18,6 @@ DUST_CHARACTERISTIC_UUID = "17bbb487-39fc-11ec-b844-039c3fbb664b"
 PIR_CHARACTERISTIC_UUID = "17bbb488-39fc-11ec-b844-039c3fbb664b"
 
 devaddr = None
-ibnfo = {}
 
 def prettify(mac_string):
     return ':'.join('%02x' % b for b in mac_string)
