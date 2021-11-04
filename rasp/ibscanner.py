@@ -7,7 +7,7 @@ class iBeacon():
     def __init__(self, verbose=False, uuid='00000000-e132-1001-b000-001c4de2af03', interval=1):
         self.init = True
         self.verbose = verbose
-        self.uuid = uuid
+        self.uuid = str.lower(uuid)
         self.interval = interval
 
         self.ibeacon_dict = {}
