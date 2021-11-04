@@ -1,7 +1,7 @@
 import argparse
 import time
 import threading
-from beacontools import BeaconScanner, IBeaconFilter, IBeaconAdvertisement
+from beacontools_modified.beacontools import BeaconScanner, IBeaconFilter, IBeaconAdvertisement
 
 class iBeacon():
     def __init__(self, verbose=False, uuid='00000000-e132-1001-b000-001c4de2af03', interval=1):
