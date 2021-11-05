@@ -34,7 +34,7 @@ AWS IoT Coreには `device/Arduinoのアドレス/data(例: device/85a5ca785ca4/
 - beacontools
 ### 使い方
 ```bash
-sudo python gateway.py --cert certs/certificate.pem.crt --key certs/private.pem.key --root certs/root.pem --ep endpoint.iot.ap-northeast-1.amazonaws.com
+sudo python gateway.py --cert certs/certificate.pem.crt --key certs/private.pem.key --root certs/root.pem --ep endpoint.iot.ap-northeast-1.amazonaws.com --uuid 00000000-e132-1001-b000-001c4de2af03
 ```
 ### 引数
 - cert: AWS IoT デバイス証明書のファイルパス
@@ -61,7 +61,7 @@ AWS IoT Coreには常に `device/0123456789AB/data` の Topicを送信する
 - beacontools
 ### 使い方
 ```bash
-sudo python dummy_gateway.py --interval 5 --cert certs/certificate.pem.crt --key certs/private.pem.key --root certs/root.pem --topic test/testing --ep endpoint.iot.ap-northeast-1.amazonaws.com
+sudo python dummy_gateway.py --interval 5 --cert certs/certificate.pem.crt --key certs/private.pem.key --root certs/root.pem --topic test/testing --ep endpoint.iot.ap-northeast-1.amazonaws.com --uuid 00000000-e132-1001-b000-001c4de2af03
 ```
 ### 引数
 - interval: AWS IoT への送信間隔(秒)、省略時は5秒
