@@ -2,7 +2,10 @@
 - [OSはraspbianをインストールする](https://qiita.com/tksnkym/items/31a237e27cbc51790cdd)
 - [初期設定をする](https://qiita.com/HeRo/items/c1c30d7267faeb304538)
 - [python をデフォルト3にする](https://www.ingenious.jp/articles/howto/raspberry-pi-howto/python-3-change/)
-- 以下のパッケージをインストール・設定する
+- OSの最新化および、以下のパッケージをインストール・設定する
+  - `sudo apt-get update`
+  - `sudo apt-get upgrade`
+  - `sudo apt-get install cmake libssl-dev`
   - `sudo apt-get install python3-pip libglib2.0-dev`
   - `sudo apt-get install python3-dev bluetooth libbluetooth-dev libcap2-bin`
   - `sudo setcap 'cap_net_raw,cap_net_admin+eip' "$(readlink -f "$(which python3)")"`
