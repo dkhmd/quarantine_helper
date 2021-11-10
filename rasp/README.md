@@ -5,7 +5,7 @@
 - OSの最新化および、以下のパッケージをインストール・設定する
   - `sudo apt-get update`
   - `sudo apt-get upgrade`
-  - `sudo apt-get install cmake libssl-dev`
+  - `sudo apt-get install cmake libssl-dev git`
   - `sudo apt-get install python3-pip libglib2.0-dev`
   - `sudo apt-get install python3-dev bluetooth libbluetooth-dev libcap2-bin`
   - `sudo setcap 'cap_net_raw,cap_net_admin+eip' "$(readlink -f "$(which python3)")"`
