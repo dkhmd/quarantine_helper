@@ -15,7 +15,7 @@ def getRaondomAction():
     l = ['none', 'touch', 'wipe']
     return random.choice(l)
 
-def pub():
+def create_dict_data():
     now = dt.now()
     dict_data = {}
     dict_data['date'] = now.strftime('%Y-%m-%d %H:%M:%S')
@@ -34,9 +34,7 @@ def pub():
 
     dict_data['action'] = getRaondomAction()
 
-    topic = 'device/' + devaddr.replace(':', '') + '/data'
-    publish.publish(endpoint=args.ep, cert=args.cert, key=args.key, root=args.root, dict_data=dict_data, topic=topic)
-
+    return dict_data
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='sudo python3 dummy_gw.py interval cert key root data endpoint')
@@ -50,8 +48,19 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    pub = publish.Publisher(endpoint=args.ep, cid='Gateway', cert=args.cert, key=args.key, root=args.root)
+    pub.connect()
     while True:
-        ib = ibscanner.iBeacon(uuid=args.uuid)
-        ibinfo = ib.exec_scan()
-        pub()
-        sleep(args.interval)
+        try:
+            ib = ibscanner.iBeacon(uuid=args.uuid)
+            ibinfo = ib.exec_scan()
+
+            topic = 'device/' + devaddr.replace(':', '') + '/data'
+            dict_data = create_dict_data()
+            pub.publish(topic=topic, dict_data=dict_data)
+
+            sleep(args.interval)
+        except:
+            break
+
+    pub.disconnect()
