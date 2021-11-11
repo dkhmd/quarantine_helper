@@ -2,16 +2,19 @@
 - [OSはraspbianをインストールする](https://qiita.com/tksnkym/items/31a237e27cbc51790cdd)
 - [初期設定をする](https://qiita.com/HeRo/items/c1c30d7267faeb304538)
 - [python をデフォルト3にする](https://www.ingenious.jp/articles/howto/raspberry-pi-howto/python-3-change/)
-- 以下のパッケージをインストール・設定する
+- OSの最新化および、以下のパッケージをインストール・設定する
+  - `sudo apt-get update`
+  - `sudo apt-get upgrade`
+  - `sudo apt-get install cmake libssl-dev git`
   - `sudo apt-get install python3-pip libglib2.0-dev`
-  - `sudo apt-get install python3-dev libbluetooth-dev libcap2-bin`
-  - `sudo setcap 'cap_net_raw,cap_net_admin+eip' "\$(readlink -f "\$(which python3)")"`
+  - `sudo apt-get install python3-dev bluetooth libbluetooth-dev libcap2-bin`
+  - `sudo setcap 'cap_net_raw,cap_net_admin+eip' "$(readlink -f "$(which python3)")"`
 - 以下のPythonライブラリをインストールする(必ずsudoをつけること)
   - `sudo pip3 install --upgrade pip`
-  - `sudo pip3 install bluepy awsiotsdk beacontools`
+  - `sudo pip3 install pybluez bluepy awsiotsdk`
 - AWS CLIのインストール
   - `sudo apt install awscli`
-  - `sudo pip3 install awscli --upgrade`
+  - `sudo pip3 install awscli --upgrade
 - [AWS CLIを設定する](https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-configure-quickstart.html)
 ```bash
 $ aws configure
@@ -37,13 +40,14 @@ AWS IoT Coreには `device/Arduinoのアドレス/data(例: device/85a5ca785ca4/
 - beacontools
 ### 使い方
 ```bash
-sudo python gateway.py --cert certs/certificate.pem.crt --key certs/private.pem.key --root certs/root.pem --ep endpoint.iot.ap-northeast-1.amazonaws.com
+sudo python gateway.py --cert certs/certificate.pem.crt --key certs/private.pem.key --root certs/root.pem --ep endpoint.iot.ap-northeast-1.amazonaws.com --uuid 00000000-e132-1001-b000-001c4de2af03
 ```
 ### 引数
 - cert: AWS IoT デバイス証明書のファイルパス
 - key: AWS IoT プライベートキーのファイルパス
 - root: AWS IoT ルート CA 証明書のファイルパス
 - ep: AWS IoT エンドポイント
+- uuid: スキャンするiBeaconのUUID、デフォルトは00000000-e132-1001-b000-001c4de2af03
 ### 注意
 - 証明書などを誤ってコミットしないこと  
 テストする際は証明書などはgit管理下以外、もしくは.gitignoreされているcertsディレクトリ以下に保管した上でテストすること
@@ -63,7 +67,7 @@ AWS IoT Coreには常に `device/0123456789AB/data` の Topicを送信する
 - beacontools
 ### 使い方
 ```bash
-sudo python dummy_gateway.py --interval 5 --cert certs/certificate.pem.crt --key certs/private.pem.key --root certs/root.pem --topic test/testing --ep endpoint.iot.ap-northeast-1.amazonaws.com
+sudo python dummy_gateway.py --interval 5 --cert certs/certificate.pem.crt --key certs/private.pem.key --root certs/root.pem --topic test/testing --ep endpoint.iot.ap-northeast-1.amazonaws.com --uuid 00000000-e132-1001-b000-001c4de2af03
 ```
 ### 引数
 - interval: AWS IoT への送信間隔(秒)、省略時は5秒
@@ -71,6 +75,7 @@ sudo python dummy_gateway.py --interval 5 --cert certs/certificate.pem.crt --key
 - key: AWS IoT プライベートキーのファイルパス
 - root: AWS IoT ルート CA 証明書のファイルパス
 - ep: AWS IoT エンドポイント
+- uuid: スキャンするiBeaconのUUID、デフォルトは00000000-e132-1001-b000-001c4de2af03
 ### 注意
 - 証明書などを誤ってコミットしないこと  
 テストする際は証明書などはgit管理下以外、もしくは.gitignoreされているcertsディレクトリ以下に保管した上でテストすること
@@ -101,17 +106,10 @@ python publish.py --cert certs/certificate.pem.crt --key certs/private.pem.key -
 iBeaconを検出するプログラム。上記[gateway.py](#gatewaypy)からモジュールとして呼び出されることを想定している  
 単独での実行時はテストが可能
 ### 事前準備
-- sudo apt-get install python3-dev libbluetooth-dev libcap2-bin
+- sudo apt-get install python3-dev bluetooth libbluetooth-dev libcap2-bin
 - sudo setcap 'cap_net_raw,cap_net_admin+eip' "$(readlink -f "$(which python3)")"
-
-**from bluetooth import _bluetooth as bluez**  
-**ModuleNotFoundError: No module named 'bluetooth'**  
-上記のエラーが出て動かない場合、追加で下記も実施  
-- sudo apt-get install bluetooth libbluetooth-dev
-- sudo python3 -m pip install pybluez
-
 ### ライブラリ
-- beacontools[scan]
+- pybluez
 ### 使い方
 ```bash
 sudo python ibscanner.py --uuid 00000000-e132-1001-b000-001c4de2af03 --interval 1

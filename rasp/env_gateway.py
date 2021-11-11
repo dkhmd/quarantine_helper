@@ -15,9 +15,9 @@ VOC_CHARACTERISTIC_UUID = "17bbb484-39fc-11ec-b844-039c3fbb664b"
 CO2_PAS_CHARACTERISTIC_UUID = "17bbb485-39fc-11ec-b844-039c3fbb664b"
 CO2_NDIR_CHARACTERISTIC_UUID = "17bbb486-39fc-11ec-b844-039c3fbb664b"
 DUST_CHARACTERISTIC_UUID = "17bbb487-39fc-11ec-b844-039c3fbb664b"
+PIR_CHARACTERISTIC_UUID = "17bbb488-39fc-11ec-b844-039c3fbb664b"
 
 devaddr = None
-ibnfo = {}
 
 def prettify(mac_string):
     return ':'.join('%02x' % b for b in mac_string)
@@ -45,11 +45,13 @@ def publish_routine(peri):
                 dict_data['co2_ndir'] = int.from_bytes(chara.read(), 'little')
             elif chara.uuid == DUST_CHARACTERISTIC_UUID:
                 dict_data['dust'] = struct.unpack('<d', chara.read())[0]
+            elif chara.uuid == PIR_CHARACTERISTIC_UUID:
+                dict_data['pir'] = int.from_bytes(chara.read(), 'little')
 
         print(dict_data)
         topic = 'device/' + devaddr.replace(':', '') + '/envdata'
         publish.publish(endpoint=args.ep, cert=args.cert, key=args.key, root=args.root, dict_data=dict_data, topic=topic)
-        sleep(30)
+        sleep(60)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='sudo python3 gateway.py cert key root data endpoint')

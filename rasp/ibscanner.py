@@ -1,13 +1,13 @@
 import argparse
 import time
 import threading
-from beacontools import BeaconScanner, IBeaconFilter, IBeaconAdvertisement
+from beacontools_modified.beacontools import BeaconScanner, IBeaconFilter, IBeaconAdvertisement
 
 class iBeacon():
     def __init__(self, verbose=False, uuid='00000000-e132-1001-b000-001c4de2af03', interval=1):
         self.init = True
         self.verbose = verbose
-        self.uuid = uuid
+        self.uuid = str.lower(uuid)
         self.interval = interval
 
         self.ibeacon_dict = {}
@@ -53,7 +53,7 @@ class iBeacon():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='sudo python3 ibscanner.py uuid  interval')
 
-    parser.add_argument('--uuid', default='00000000-e132-1001-b000-001c4de2af03', help='uuid')
+    parser.add_argument('-u', '--uuid', default='00000000-e132-1001-b000-001c4de2af03', help='uuid')
     parser.add_argument('-i', '--interval', default=1, help='interval(sec)')
 
     args = parser.parse_args()

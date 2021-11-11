@@ -9,6 +9,7 @@ BLEUnsignedShortCharacteristic vocCharacteristic(VOC_CHARACTERISTIC_UUID, BLERea
 BLEUnsignedShortCharacteristic co2pasCharacteristic(CO2_PAS_CHARACTERISTIC_UUID, BLERead | BLENotify);
 BLEUnsignedShortCharacteristic co2ndirCharacteristic(CO2_NDIR_CHARACTERISTIC_UUID, BLERead | BLENotify);
 BLEDoubleCharacteristic dustCharacteristic(DUST_CHARACTERISTIC_UUID, BLERead | BLENotify);
+BLEUnsignedCharCharacteristic pirCharacteristic(PIR_CHARACTERISTIC_UUID, BLERead | BLENotify);
 
 
 BLEDevice central;
@@ -38,6 +39,7 @@ void ble_peripheral_setup() {
   sensorService.addCharacteristic(co2pasCharacteristic);
   sensorService.addCharacteristic(co2ndirCharacteristic);
   sensorService.addCharacteristic(dustCharacteristic);
+  sensorService.addCharacteristic(pirCharacteristic);
 
   // add the service
   BLE.addService(sensorService);
@@ -49,6 +51,7 @@ void ble_peripheral_setup() {
   co2pasCharacteristic.writeValue(0);
   co2ndirCharacteristic.writeValue(0);
   dustCharacteristic.writeValue(0);
+  pirCharacteristic.writeValue(0);
 
   // start advertising
   BLE.advertise();
@@ -110,6 +113,12 @@ bool ble_peripheral_notify_co2_ndir(unsigned short val) {
 
 bool ble_peripheral_notify_dust(double val) {
   dustCharacteristic.writeValue(val);
+
+  return true;
+}
+
+bool ble_peripheral_notify_pir(unsigned char val) {
+  pirCharacteristic.writeValue(val);
 
   return true;
 }

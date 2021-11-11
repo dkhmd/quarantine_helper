@@ -11,6 +11,7 @@
 #define CO2_PAS_CHARACTERISTIC_UUID       "17bbb485-39fc-11ec-b844-039c3fbb664b"
 #define CO2_NDIR_CHARACTERISTIC_UUID      "17bbb486-39fc-11ec-b844-039c3fbb664b"
 #define DUST_CHARACTERISTIC_UUID          "17bbb487-39fc-11ec-b844-039c3fbb664b"
+#define PIR_CHARACTERISTIC_UUID           "17bbb488-39fc-11ec-b844-039c3fbb664b"
 
 void ble_peripheral_setup();
 void ble_peripheral_loop();
@@ -21,5 +22,6 @@ bool ble_peripheral_notify_voc(unsigned short val);
 bool ble_peripheral_notify_co2_pas(unsigned short val);
 bool ble_peripheral_notify_co2_ndir(unsigned short val);
 bool ble_peripheral_notify_dust(double val);
+bool ble_peripheral_notify_pir(unsigned char val);
 
 #endif
