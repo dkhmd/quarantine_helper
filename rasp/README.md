@@ -14,7 +14,7 @@
   - `sudo pip3 install pybluez bluepy awsiotsdk`
 - AWS CLIのインストール
   - `sudo apt install awscli`
-  - `sudo pip3 install awscli --upgrade
+  - `sudo pip3 install awscli --upgrade`
 - [AWS CLIを設定する](https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/cli-configure-quickstart.html)
 ```bash
 $ aws configure
