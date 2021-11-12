@@ -35,7 +35,7 @@ def create_dict_data(data):
     dict_data['address'] = devaddr
 
     dict_data['number_of_beacon'] = len(ibinfo)
-    dict_data['beaon'] = []
+    dict_data['beacon'] = []
     for k, v in ibinfo.items():
         binfo = {}
         binfo['address'] = k
@@ -43,7 +43,7 @@ def create_dict_data(data):
         binfo['major'] = v[1]['major']
         binfo['minor'] = v[1]['minor']
         binfo['uuid'] = v[1]['uuid']
-        dict_data['beaon'].append(binfo)
+        dict_data['beacon'].append(binfo)
 
     dict_data['action'] = convAction(data)
 

@@ -23,6 +23,8 @@ def prettify(mac_string):
     return ':'.join('%02x' % b for b in mac_string)
  
 def publish_routine(peri):
+    pub = publish.Publisher(endpoint=args.ep, cid='Gateway', cert=args.cert, key=args.key, root=args.root)
+    pub.connect()
     while True:
         dict_data = {}
         now = dt.now()
@@ -50,8 +52,9 @@ def publish_routine(peri):
 
         print(dict_data)
         topic = 'device/' + devaddr.replace(':', '') + '/envdata'
-        publish.publish(endpoint=args.ep, cert=args.cert, key=args.key, root=args.root, dict_data=dict_data, topic=topic)
+        pub.publish(topic=topic, dict_data=dict_data)
         sleep(60)
+    pub.disconnect()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='sudo python3 gateway.py cert key root data endpoint')
