@@ -37,7 +37,7 @@ def create_dict_data():
     return dict_data
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='sudo python3 dummy_gw.py interval cert key root data endpoint')
+    parser = argparse.ArgumentParser(description='sudo python3 dummy_gw.py interval cert key root ep')
 
     parser.add_argument('-i', '--interval', default=5, help='interval(sec)')
     parser.add_argument('-c', '--cert', required=True, help='cert file path')

@@ -57,7 +57,7 @@ def publish_routine(peri):
     pub.disconnect()
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='sudo python3 gateway.py cert key root data endpoint')
+    parser = argparse.ArgumentParser(description='sudo python3 env_gateway.py cert key root ep position')
 
     parser.add_argument('-c', '--cert', required=True, help='cert file path')
     parser.add_argument('-k', '--key', required=True, help='key file path')
