@@ -58,5 +58,5 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    ib = iBeacon(verbose=True, uuid=args.uuid, interval=args.interval)
+    ib = iBeacon(verbose=True, uuid=args.uuid, interval=int(args.interval))
     ib.start_scan()

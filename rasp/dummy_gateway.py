@@ -59,7 +59,7 @@ if __name__ == "__main__":
             dict_data = create_dict_data()
             pub.publish(topic=topic, dict_data=dict_data)
 
-            sleep(args.interval)
+            sleep(int(args.interval))
         except:
             break
 
