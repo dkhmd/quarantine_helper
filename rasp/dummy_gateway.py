@@ -22,7 +22,7 @@ def create_dict_data():
     dict_data['address'] = devaddr
 
     dict_data['number_of_beacon'] = len(ibinfo)
-    dict_data['beaon'] = []
+    dict_data['beacon'] = []
     for k, v in ibinfo.items():
         binfo = {}
         binfo['address'] = k
@@ -30,14 +30,14 @@ def create_dict_data():
         binfo['major'] = v[1]['major']
         binfo['minor'] = v[1]['minor']
         binfo['uuid'] = v[1]['uuid']
-        dict_data['beaon'].append(binfo)
+        dict_data['beacon'].append(binfo)
 
     dict_data['action'] = getRaondomAction()
 
     return dict_data
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='sudo python3 dummy_gw.py interval cert key root data endpoint')
+    parser = argparse.ArgumentParser(description='sudo python3 dummy_gw.py interval cert key root ep')
 
     parser.add_argument('-i', '--interval', default=5, help='interval(sec)')
     parser.add_argument('-c', '--cert', required=True, help='cert file path')
@@ -59,7 +59,7 @@ if __name__ == "__main__":
             dict_data = create_dict_data()
             pub.publish(topic=topic, dict_data=dict_data)
 
-            sleep(args.interval)
+            sleep(int(args.interval))
         except:
             break
 
