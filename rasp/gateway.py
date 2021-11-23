@@ -32,6 +32,7 @@ def create_dict_data(data):
     now = dt.now()
     dict_data = {}
     dict_data['date'] = now.strftime('%Y-%m-%d %H:%M:%S')
+    dict_data['timestamp'] = now.timestamp()
     dict_data['address'] = devaddr
 
     dict_data['number_of_beacon'] = len(ibinfo)
