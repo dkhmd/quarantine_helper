@@ -191,7 +191,7 @@ void setup() {
 
   // initialize serial
   Serial.begin(115200);
-  while (!Serial);
+//  while (!Serial);
 
   // set gloval variables
   sampling_period_us = round(1000000 * (1.0/SAMPLING_FREQUENCY));
