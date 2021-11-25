@@ -1,6 +1,6 @@
 import serial
 
-SERIAL_DEVICE_NAME = "/dev/tty.usbmodem1141301"
+SERIAL_DEVICE_NAME = "/dev/tty.usbmodem1141401"
 def run():
     ser = serial.Serial(SERIAL_DEVICE_NAME, 115200, timeout=None)
     while True:
