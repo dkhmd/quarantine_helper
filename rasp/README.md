@@ -75,7 +75,7 @@ sudo python dummy_gateway.py --interval 5 --cert certs/certificate.pem.crt --key
 - key: AWS IoT プライベートキーのファイルパス
 - root: AWS IoT ルート CA 証明書のファイルパス
 - ep: AWS IoT エンドポイント
-- uuid: スキャンするiBeaconのUUID、デフォルトは00000000-e132-1001-b000-001c4de2af03
+- uuid: スキャンするiBeaconのUUID、デフォルトは00000000-123c-1001-B000-001c4D05C3A8
 ### 注意
 - 証明書などを誤ってコミットしないこと  
 テストする際は証明書などはgit管理下以外、もしくは.gitignoreされているcertsディレクトリ以下に保管した上でテストすること
