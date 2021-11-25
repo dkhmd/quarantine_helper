@@ -8,7 +8,7 @@ import boto3
 import matplotlib.pyplot as plt
 import serial
 
-SERIAL_DEVICE_NAME = "/dev/tty.usbmodem1141301"
+SERIAL_DEVICE_NAME = "/dev/tty.usbmodem1141401"
 class Plotter():
     def __init__(self, label, samples):
         self.initial_flag = True
@@ -20,7 +20,8 @@ class Plotter():
     def run(self):
         fig, ax = plt.subplots()
 
-        arr = [0] * self.samples
+        arr0 = [0] * self.samples
+        arr1 = [0] * self.samples
         x = range(0, self.samples)
 
         ser = serial.Serial(SERIAL_DEVICE_NAME, 115200, timeout=None)
@@ -34,10 +35,12 @@ class Plotter():
                     continue
 
                 # extract emg data
-                emg = re.search(r'cnt:(\d+)', line)
-                cnt = int(emg.group(1))
-                emg = re.search(r'emg:([\d\.]+)', line)
-                val = float(emg.group(1))
+                cnt_str = re.search(r'cnt:(\d+)', line)
+                cnt = int(cnt_str.group(1))
+                emg0 = re.search(r'emg0:([\d\.]+)', line)
+                val0 = float(emg0.group(1))
+                emg1 = re.search(r'emg1:([\d\.]+)', line)
+                val1 = float(emg1.group(1))
 
                 # write csv header
                 if self.initial_flag:
@@ -62,14 +65,16 @@ class Plotter():
                     writer = csv.writer(f)
                     writer.writerow(data_arr)
 
-                arr[cnt] = val
+                arr0[cnt] = val0
+                arr1[cnt] = val1
                 if cnt == self.samples-1:
                     break
 
             # plot
             ax.set_xlim(0, self.samples)
 #            ax.set_ylim(400, 1024)
-            line, = ax.plot(x, arr, color='blue')
+            line, = ax.plot(x, arr0, color='blue')
+            line, = ax.plot(x, arr1, color='green')
             plt.pause(0.1)
             line.remove()
 

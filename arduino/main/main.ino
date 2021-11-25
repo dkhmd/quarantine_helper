@@ -45,7 +45,6 @@ float             emg_data[EMG_CH][SAMPLES * 2];
 SENSORS_DATA      imu_data[SAMPLES * 2];
 
 int               grp_counter = 0;
-int               buf_counter = 0;
 Thread            sensor_thread, inference_a_thread, inference_b_thread, ble_touch_thread, ble_wipe_thread;
 EventFlags        sensor_flags, inf_flags, ble_flags;
 
@@ -179,7 +178,7 @@ static void sensor_thread_cb() {
     if((grp_counter % 4) == 0) {
       // print sensor values
       sprintf(dbg_buf, "[DATA]grp:%d, cnt:%d, sample:%d, emg0:%f, emg1:%f, acc_x:%f, acc_y:%f, acc_z:%f, gyro_x:%f, gyro_y:%f, gyro_z:%f", \
-                    grp_counter, buf_counter, SAMPLES, emg_data[0][sensor_counter], emg_data[1][sensor_counter],
+                    grp_counter/4, sensor_counter, SAMPLES, emg_data[0][sensor_counter], emg_data[1][sensor_counter],
                     imu_data[sensor_counter % 2].sensor[SENSOR_KIND_ACC].x, imu_data[sensor_counter % 2].sensor[SENSOR_KIND_ACC].y, imu_data[sensor_counter % 2].sensor[SENSOR_KIND_ACC].z, \
                     imu_data[sensor_counter % 2].sensor[SENSOR_KIND_GYRO].x, imu_data[sensor_counter % 2].sensor[SENSOR_KIND_GYRO].y, imu_data[sensor_counter % 2].sensor[SENSOR_KIND_GYRO].z);
       Serial.println(dbg_buf);
@@ -192,9 +191,6 @@ static void sensor_thread_cb() {
       sensor_counter = 0;
 
       grp_counter++;
-      if(grp_counter == 4){
-        grp_counter = 0;
-      }
     }
 #else
     if(sensor_counter == SAMPLES){
