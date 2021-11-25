@@ -11,10 +11,12 @@
 
 
 /*** Definition ***/
-// #define __COLLECT_RAW_DATA__    true
+#define __COLLECT_RAW_DATA__    true
 
 #define SAMPLES                     256 //Must be a power of 2
 #define SAMPLING_FREQUENCY          200 //Hz, must be less than 10000 due to ADC
+#define EMG_CH                      2
+#define INF_DATA_SIZE               (SAMPLES * 8) //emg0, emg1, acc.x, acc.y, acc.z, gyro.x, gyro.y, gyro.z
 
 #define SENSOR_FLAG_TMR_AVAILABLE   (1UL << 0)
 #define SENSOR_FLAG_BLE_AVAILABLE   (1UL << 1)
@@ -26,7 +28,6 @@
 #define BLE_FLAG_WIPE               (1UL << 1)
 
 #define DBG_BUFFER_SIZE             256
-#define MAX_BEACON_NUM              8
 
 #define PORT_BUZZER                 9
 
@@ -40,8 +41,8 @@ using namespace rtos;
 
 /*** Variables ***/
 int               sensor_counter = 0;
-float             emg_data[SAMPLES];
-SENSORS_DATA      imu_data[SAMPLES];
+float             emg_data[EMG_CH][SAMPLES * 2];
+SENSORS_DATA      imu_data[SAMPLES * 2];
 
 int               grp_counter = 0;
 int               buf_counter = 0;
@@ -57,7 +58,7 @@ NRF52_MBED_Timer  ITimer0(NRF_TIMER_3);
 
 /*** Interrupt ***/
 void timer_handler()
-{  
+{
   sensor_flags.set(SENSOR_FLAG_TMR_AVAILABLE);
 }
 
@@ -103,15 +104,26 @@ static void ble_wipe_thread_cb(){
   }
 }
 
+static void combine_data(float *emg0, float *emg1, SENSORS_DATA *sensor, float *output, int output_size){
+
+  memset(output, 0x00, output_size);
+
+  memcpy(&output[0]           , emg0    , SAMPLES);
+  memcpy(&output[SAMPLES]     , emg1    , SAMPLES);
+  memcpy(&output[2 * SAMPLES] , sensor  , 6 * SAMPLES);
+}
+
 static void inference_a_thread_cb(){
   osThreadSetPriority(osThreadGetId(), osPriorityAboveNormal);
   while(true) {
+    float data[INF_DATA_SIZE];
     ACTION act = ACTION_NONE;
     
     inf_flags.wait_all(INF_FLAG_DATA_A, osWaitForever, false);
 
     // Inference
-    inference_exec(&emg_data[0], SAMPLES, &act);
+    combine_data(&emg_data[0][0], &emg_data[1][0], &imu_data[0], data, sizeof(data));
+    inference_exec(data, SAMPLES, &act);
     transmit_ble(act);
 
     // clear flag
@@ -122,12 +134,14 @@ static void inference_a_thread_cb(){
 static void inference_b_thread_cb(){
   osThreadSetPriority(osThreadGetId(), osPriorityAboveNormal);
   while(true) {
+    float data[INF_DATA_SIZE];
     ACTION act = ACTION_NONE;
 
     inf_flags.wait_all(INF_FLAG_DATA_B, osWaitForever, false);
 
     // Inference
-    inference_exec(&emg_data[SAMPLES], SAMPLES, &act);
+    combine_data(&emg_data[0][SAMPLES], &emg_data[1][SAMPLES], &imu_data[SAMPLES], data, sizeof(data));
+    inference_exec(data, SAMPLES, &act);
     transmit_ble(act);
 
     // clear flag
@@ -137,7 +151,7 @@ static void inference_b_thread_cb(){
 
 static void sensor_thread_cb() {
   osThreadSetPriority(osThreadGetId(), osPriorityRealtime);
-  
+
   while(true){
     sensor_flags.wait_all(SENSOR_FLAG_TMR_AVAILABLE | SENSOR_FLAG_BLE_AVAILABLE, osWaitForever, false);
     if((sensor_counter == 0) || (sensor_counter == SAMPLES)){
@@ -145,14 +159,15 @@ static void sensor_thread_cb() {
     }
 
     // EMG Sampling(200HZ)
-    emg_data[sensor_counter] = emg_read(A0);
+    emg_data[0][sensor_counter] = emg_read(A0);
+    emg_data[1][sensor_counter] = emg_read(A1);
   
     // IMU Sampling(100HZ)
     if((sensor_counter % 2) == 0){
       imu_read(&imu_data[sensor_counter % 2]);
     }
 
-  #ifdef __COLLECT_RAW_DATA__
+#ifdef __COLLECT_RAW_DATA__
     if((grp_counter % 4) == 0) {
         digitalWrite(PORT_BUZZER, LOW);
     } else if(((grp_counter % 4) == 3) || (sensor_counter <= SAMPLES/4)) {
@@ -163,15 +178,25 @@ static void sensor_thread_cb() {
   
     if((grp_counter % 4) == 0) {
       // print sensor values
-      sprintf(dbg_buf, "[DATA]grp:%d, cnt:%d, sample:%d, emg:%f, acc_x:%f, acc_y:%f, acc_z:%f, gyro_x:%f, gyro_y:%f, gyro_z:%f", \
-                    grp_counter, buf_counter, SAMPLES, emg_data[sensor_counter],
-                    imu_data[sensor_counter].sensor[SENSOR_KIND_ACC].x, imu_data[sensor_counter].sensor[SENSOR_KIND_ACC].y, imu_data[sensor_counter].sensor[SENSOR_KIND_ACC].z, \
-                    imu_data[sensor_counter].sensor[SENSOR_KIND_GYRO].x, imu_data[sensor_counter].sensor[SENSOR_KIND_GYRO].y, imu_data[sensor_counter].sensor[SENSOR_KIND_GYRO].z);
+      sprintf(dbg_buf, "[DATA]grp:%d, cnt:%d, sample:%d, emg0:%f, emg1:%f, acc_x:%f, acc_y:%f, acc_z:%f, gyro_x:%f, gyro_y:%f, gyro_z:%f", \
+                    grp_counter, buf_counter, SAMPLES, emg_data[0][sensor_counter], emg_data[1][sensor_counter],
+                    imu_data[sensor_counter % 2].sensor[SENSOR_KIND_ACC].x, imu_data[sensor_counter % 2].sensor[SENSOR_KIND_ACC].y, imu_data[sensor_counter % 2].sensor[SENSOR_KIND_ACC].z, \
+                    imu_data[sensor_counter % 2].sensor[SENSOR_KIND_GYRO].x, imu_data[sensor_counter % 2].sensor[SENSOR_KIND_GYRO].y, imu_data[sensor_counter % 2].sensor[SENSOR_KIND_GYRO].z);
       Serial.println(dbg_buf);
     }
-  #endif
-  
+#endif
+
     sensor_counter++;
+#ifdef __COLLECT_RAW_DATA__
+    if(sensor_counter == SAMPLES){
+      sensor_counter = 0;
+
+      grp_counter++;
+      if(grp_counter == 4){
+        grp_counter = 0;
+      }
+    }
+#else
     if(sensor_counter == SAMPLES){
       Serial.println("[SENSOR]Scan a done");
       inf_flags.set(INF_FLAG_DATA_A);  
@@ -180,6 +205,7 @@ static void sensor_thread_cb() {
       inf_flags.set(INF_FLAG_DATA_B);
       sensor_counter = 0;
     }
+#endif
     sensor_flags.clear(SENSOR_FLAG_TMR_AVAILABLE);
   }
 }
@@ -191,7 +217,7 @@ void setup() {
 
   // initialize serial
   Serial.begin(115200);
-//  while (!Serial);
+  while (!Serial);
 
   // set gloval variables
   sampling_period_us = round(1000000 * (1.0/SAMPLING_FREQUENCY));
@@ -201,17 +227,24 @@ void setup() {
   // setup each device
   emg_setup();
   imu_setup();
+
+#ifndef __COLLECT_RAW_DATA__
   ble_peripheral_setup();
   inference_setup();
+#endif
 
+#ifndef __COLLECT_RAW_DATA__
   // create ble thread
   ble_touch_thread.start(ble_touch_thread_cb);
   ble_wipe_thread.start(ble_wipe_thread_cb);
+#endif
 
   // create sensor and inference thread
   sensor_thread.start(sensor_thread_cb);
+#ifndef __COLLECT_RAW_DATA__
   inference_a_thread.start(inference_a_thread_cb);
   inference_b_thread.start(inference_b_thread_cb);
+#endif
 
   // set sensor flag
   sensor_flags.clear(SENSOR_FLAG_TMR_AVAILABLE);
@@ -224,5 +257,7 @@ void setup() {
 }
 
 void loop() {
+#ifndef __COLLECT_RAW_DATA__
   ble_peripheral_loop();
+#endif
 }
