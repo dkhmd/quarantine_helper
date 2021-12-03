@@ -59,7 +59,8 @@ if __name__ == "__main__":
 
             topic = 'device/' + devaddr.replace(':', '') + '/data'
             dict_data = create_dict_data()
-            pub.publish(topic=topic, dict_data=dict_data)
+            if dict_data['number_of_beacon'] != 0:
+                pub.publish(topic=topic, dict_data=dict_data)
 
             sleep(int(args.interval))
         except:
