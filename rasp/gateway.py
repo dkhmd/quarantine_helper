@@ -57,7 +57,8 @@ class NotifyDelegate(DefaultDelegate):
     def handleNotification(self, cHandle, data):
         topic = 'device/' + devaddr.replace(':', '') + '/data'
         dict_data = create_dict_data(data)
-        pub.publish(topic=topic, dict_data=dict_data)
+        if dict_data['number_of_beacon'] != 0:
+            pub.publish(topic=topic, dict_data=dict_data)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='sudo python3 gateway.py cert key root ep')
