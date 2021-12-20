@@ -80,7 +80,6 @@ static void sensor_thread_cb() {
         uint16_t tmp_co2_ndir = 0;
         // voc
         voc_read(&prev_voc);
-        tmr_flags.clear(FLAG_TMR_AVAILABLE);
 
         // co2(ndir)
         if((sampling_cnt % 2) == 0) {
@@ -92,6 +91,8 @@ static void sensor_thread_cb() {
         if (pir != 0){
           pir_cnt++;
         }
+
+        tmr_flags.clear(FLAG_TMR_AVAILABLE);        
         continue;
     } else {
       sampling_cnt = 0;

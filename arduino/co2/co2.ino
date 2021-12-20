@@ -3,13 +3,16 @@
 #include <rtos.h>
 #include <NRF52_MBED_TimerInterrupt.h>
 
+#include "color.h"
 #include "bme280.h"
 #include "co2_ndir.h"
 #include "ble_peripheral.h"
 
 
+#define BM280_CS_PIN        D10
+
 #define SAMPLING_PERIOD_US  (1 * 1000 * 1000)
-#define SAMPLING_TIMES      60
+#define SAMPLING_TIMES      10
 
 #define FLAG_TMR_AVAILABLE   (1UL << 0)
 
@@ -22,7 +25,7 @@ using namespace rtos;
 
 /*** Variables ***/
 int               sampling_cnt = 0;
-Thread            sensor_thread;
+Thread            sensor_thread; 
 EventFlags        tmr_flags;
 
 // Init NRF52 timer NRF_TIMER3
@@ -41,7 +44,9 @@ static void sensor_thread_cb() {
 
   while(true){
     tmr_flags.wait_all(FLAG_TMR_AVAILABLE, osWaitForever, false);
-  
+
+    int color_r = 0, color_g = 0, color_b = 0, color_a = 0;
+    static int prev_color_r = 0, prev_color_g = 0, prev_color_b = 0, prev_color_a = 0;
     uint16_t co2_ndir = 0;
     static uint16_t prev_co2_ndir = 0;
     float temp = 0, hum = 0, pressure = 0;
@@ -52,13 +57,38 @@ static void sensor_thread_cb() {
         if((sampling_cnt % 2) == 0) {
           co2_ndir_read(&prev_co2_ndir);
         }
+
+        tmr_flags.clear(FLAG_TMR_AVAILABLE);
         continue;
     } else {
       sampling_cnt = 0;
     }
 
+    // Color
+    if(color_read(&color_r, &color_g, &color_b, &color_a) == true) {
+      prev_color_r = color_r;
+      prev_color_g = color_g;
+      prev_color_b = color_b;
+      prev_color_a = color_a;
+      ble_peripheral_notify_color(color_a);
+    } else {
+      color_r = prev_color_r; color_g = prev_color_g; color_b = prev_color_b; color_a = prev_color_a;
+    }
+    Serial.print("color_a:");
+    Serial.print(color_a);
+
     // BM280
     bm280_read(&temp, &hum, &pressure);
+    ble_peripheral_notify_temperature(temp);
+    ble_peripheral_notify_humidity(hum);
+    ble_peripheral_notify_temperature(hum);
+    ble_peripheral_notify_pressure(pressure);
+    Serial.print(", temp:");
+    Serial.print(temp);
+    Serial.print(", hum:");
+    Serial.print(hum);
+    Serial.print(", pressure:");
+    Serial.print(pressure);
 
     // CO2(NDIR)
     if(co2_ndir_read(&co2_ndir) == true) {
@@ -66,10 +96,10 @@ static void sensor_thread_cb() {
     } else {
       co2_ndir = prev_co2_ndir;
     }
+    ble_peripheral_notify_co2_ndir(co2_ndir);
     Serial.print(", co2(ndir):");
     Serial.print(co2_ndir);
     prev_co2_ndir = co2_ndir;
-
   
     Serial.println("");
     tmr_flags.clear(FLAG_TMR_AVAILABLE);
@@ -89,7 +119,8 @@ void setup() {
   Wire.begin();
 
   // setup each device
-  bme280_setup();
+  color_setup();
+  bme280_setup(BM280_CS_PIN);
   co2_ndir_setup();
 
   // ble

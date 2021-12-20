@@ -2,8 +2,8 @@
 
 BME280 sensor;
 
-void bme280_setup() {
-  sensor.beginI2C();
+void bme280_setup(int pin) {
+  sensor.beginSPI(pin);
 }
  
 bool bm280_read(float *temp, float *hum, float *pressure) {

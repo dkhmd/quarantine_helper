@@ -10,6 +10,7 @@ BLEUnsignedShortCharacteristic co2pasCharacteristic(CO2_PAS_CHARACTERISTIC_UUID,
 BLEUnsignedShortCharacteristic co2ndirCharacteristic(CO2_NDIR_CHARACTERISTIC_UUID, BLERead | BLENotify);
 BLEDoubleCharacteristic dustCharacteristic(DUST_CHARACTERISTIC_UUID, BLERead | BLENotify);
 BLEUnsignedCharCharacteristic pirCharacteristic(PIR_CHARACTERISTIC_UUID, BLERead | BLENotify);
+BLEFloatCharacteristic pressureCharacteristic(PRESSURE_CHARACTERISTIC_UUID, BLERead | BLENotify);
 
 
 BLEDevice central;
@@ -40,6 +41,7 @@ void ble_peripheral_setup() {
   sensorService.addCharacteristic(co2ndirCharacteristic);
   sensorService.addCharacteristic(dustCharacteristic);
   sensorService.addCharacteristic(pirCharacteristic);
+  sensorService.addCharacteristic(pressureCharacteristic);
 
   // add the service
   BLE.addService(sensorService);
@@ -52,6 +54,7 @@ void ble_peripheral_setup() {
   co2ndirCharacteristic.writeValue(0);
   dustCharacteristic.writeValue(0);
   pirCharacteristic.writeValue(0);
+  pressureCharacteristic.writeValue(0);
 
   // start advertising
   BLE.advertise();
@@ -119,6 +122,12 @@ bool ble_peripheral_notify_dust(double val) {
 
 bool ble_peripheral_notify_pir(unsigned char val) {
   pirCharacteristic.writeValue(val);
+
+  return true;
+}
+
+bool ble_peripheral_notify_pressure(float val) {
+  pressureCharacteristic.writeValue(val);
 
   return true;
 }
