@@ -2,7 +2,7 @@
 
 BME280 sensor;
 
-void bm280_setup(int pin) {
+void bme280_setup(int pin) {
   sensor.beginSPI(pin);
 }
  

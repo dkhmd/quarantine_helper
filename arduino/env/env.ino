@@ -204,7 +204,7 @@ void setup() {
   pir_setup(PIR_PIN);
 
   // ble
-  ble_peripheral_setup();
+//  ble_peripheral_setup();
 
   // create sensor thread
   sensor_thread.start(sensor_thread_cb);  
@@ -221,7 +221,7 @@ void setup() {
 void loop() {
   double dust;
   
-  ble_peripheral_loop();
+//  ble_peripheral_loop();
 
   // sensors
   // DUST

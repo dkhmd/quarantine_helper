@@ -30,7 +30,7 @@ void loop() {
   pin3 = digitalRead(10);
   door = digitalRead(9);
 
-  Serial.print("ｍph:");
+  Serial.print("mph:");
   Serial.print(mph);
 
   Serial.print(", door:");
