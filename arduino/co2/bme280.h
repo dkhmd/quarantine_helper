@@ -5,6 +5,6 @@
 #include <SparkFunBME280.h>
 
 void bme280_setup(int pin);
-bool bm280_read(float *temp, float *hum, float *pressure);
+bool bme280_read(float *temp, float *hum, float *pressure);
 
 #endif

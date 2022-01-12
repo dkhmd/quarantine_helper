@@ -29,7 +29,9 @@
 
 #define DBG_BUFFER_SIZE             256
 
-#define PORT_BUZZER                 9
+#define PORT_EMG0                   A0
+#define PORT_EMG1                   A1
+#define PORT_BUZZER                 D9
 
 
 /*** Name Space ***/
@@ -158,8 +160,8 @@ static void sensor_thread_cb() {
     }
 
     // EMG Sampling(200HZ)
-    emg_data[0][sensor_counter] = emg_read(A0);
-    emg_data[1][sensor_counter] = emg_read(A1);
+    emg_data[0][sensor_counter] = emg_read(PORT_EMG0);
+    emg_data[1][sensor_counter] = emg_read(PORT_EMG1);
   
     // IMU Sampling(100HZ)
     if((sensor_counter % 2) == 0){

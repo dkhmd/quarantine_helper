@@ -6,10 +6,12 @@
 #include "color.h"
 #include "bme280.h"
 #include "co2_ndir.h"
+#include "pir.h"
 #include "ble_peripheral.h"
 
 
-#define BM280_CS_PIN        D10
+#define BME280_CS_PIN        D10
+#define PIR_PIN             D8
 
 #define SAMPLING_PERIOD_US  (1 * 1000 * 1000)
 #define SAMPLING_TIMES      10
@@ -50,12 +52,20 @@ static void sensor_thread_cb() {
     uint16_t co2_ndir = 0;
     static uint16_t prev_co2_ndir = 0;
     float temp = 0, hum = 0, pressure = 0;
+    char pir = 0;
+    static unsigned char pir_cnt = 0;
 
     sampling_cnt++;
     if (sampling_cnt < SAMPLING_TIMES){
         // co2(ndir)
         if((sampling_cnt % 2) == 0) {
           co2_ndir_read(&prev_co2_ndir);
+        }
+
+        // pir
+        pir_read(PIR_PIN, &pir);
+        if (pir != 0){
+          pir_cnt++;
         }
 
         tmr_flags.clear(FLAG_TMR_AVAILABLE);
@@ -77,8 +87,8 @@ static void sensor_thread_cb() {
     Serial.print("color_a:");
     Serial.print(color_a);
 
-    // BM280
-    bm280_read(&temp, &hum, &pressure);
+    // BME280
+    bme280_read(&temp, &hum, &pressure);
     ble_peripheral_notify_temperature(temp);
     ble_peripheral_notify_humidity(hum);
     ble_peripheral_notify_temperature(hum);
@@ -100,7 +110,17 @@ static void sensor_thread_cb() {
     Serial.print(", co2(ndir):");
     Serial.print(co2_ndir);
     prev_co2_ndir = co2_ndir;
-  
+
+    // PIR
+    pir_read(PIR_PIN, &pir);
+    if (pir != 0){
+      pir_cnt++;
+    }
+    ble_peripheral_notify_pir(pir_cnt);
+    Serial.print(", pir:");
+    Serial.print(pir_cnt);
+    pir_cnt = 0;
+
     Serial.println("");
     tmr_flags.clear(FLAG_TMR_AVAILABLE);
   }
@@ -120,8 +140,9 @@ void setup() {
 
   // setup each device
   color_setup();
-  bme280_setup(BM280_CS_PIN);
+  bme280_setup(BME280_CS_PIN);
   co2_ndir_setup();
+  pir_setup(PIR_PIN);
 
   // ble
   ble_peripheral_setup();
