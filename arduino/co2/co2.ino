@@ -107,7 +107,7 @@ static void sensor_thread_cb() {
       co2_ndir = prev_co2_ndir;
     }
     ble_peripheral_notify_co2_ndir(co2_ndir);
-    Serial.print(", co2(ndir):");
+    Serial.print(", co2:");
     Serial.print(co2_ndir);
     prev_co2_ndir = co2_ndir;
 
