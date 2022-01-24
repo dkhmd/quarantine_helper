@@ -37,7 +37,7 @@ Arduinoからのシリアル出力を表示するだけのプログラム
 sudo python serial_disp.py
 ```
 
-## data_upload.py
+## co2_upload.py
 Arduinoからシリアル経由でCO2/温湿度/気圧/ドアの状態のデータを受け取るプログラム
 CSV形式でAWS S3にアップロードする
 ### ライブラリ
@@ -63,3 +63,5 @@ Default output format [None]: json
 ```
 - /tmp/data_air.csv に一時ファイルを保存するため、書き込み権限を渡しておくこと
 - プログラム内でシリアルデバイス名を直書しているため、デバイス名が異なる場合はプログラム内の `SERIAL_DEVICE1_NAME`(ドアの状態側) および `SERIAL_DEVICE2_NAME`(CO2センサー側) を所望のデバイス名に書き換えること
+
+![image](https://user-images.githubusercontent.com/16249131/150780985-4369ccde-c1aa-433b-951a-26120c40e3b9.png)
