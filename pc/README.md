@@ -69,7 +69,7 @@ Default output format [None]: json
 2. ArduinoとパソコンをUSBケーブルで接続し、Arduino IDEから[co2](https://github.com/airkei/quarantine_helper/tree/main/arduino)のスケッチを開いてUploadする(Arduinoにプログラムを書き込む)
 3. Raspberry Piを起動し、以下のPythonパッケージをインストールする  
 `pip3 install boto3 serial`
-4. PCに刺さっているUSBケーブルをRaspberry Piに刺し替え、Raspberry Pi と Arduino をUSBケーブルで接続する
+4. PCに刺さっているUSBケーブルをRaspberry Piに刺し替えることで、Raspberry Pi と Arduino をUSBケーブルで接続する
 5. ブレッドボードから出ている5Vのジャンパー線をRaspberry Piの5V(2もしくは4)に刺し、GNDのジャンパー線をRaspberry PiのGND(6)に刺す。ピン配置は[コチラ](https://ymt-lab.com/post/2021/raspberrypi-pin-assugnment/)
 7. Raspberry Pi から Arduinoの[シリアルポート名を確認](https://algorithm.joho.info/programming/python/raspberrypi3-arduino-dmesg-port/)する(ttyACM0 など)
 8. co2_upload.py プログラム内の `SERIAL_DEVICE2_NAME` を上記のシリアルポート名に書き換える(`SERIAL_DEVICE2_NAME = "/dev/ttyACM0"` など)
