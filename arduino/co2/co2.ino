@@ -10,7 +10,7 @@
 #include "ble_peripheral.h"
 
 
-#define BME280_CS_PIN        D10
+#define BME280_CS_PIN       D10
 #define PIR_PIN             D8
 
 #define SAMPLING_PERIOD_US  (1 * 1000 * 1000)
