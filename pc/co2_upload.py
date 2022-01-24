@@ -1,3 +1,4 @@
+import argparse
 import csv
 from datetime import datetime as dt
 import sys
@@ -20,7 +21,11 @@ class Scanner():
         self.pos_state = "0"
 
     def window_run(self):
-        ser = serial.Serial(SERIAL_DEVICE1_NAME, 115200, timeout=None)
+        try:
+            ser = serial.Serial(SERIAL_DEVICE1_NAME, 115200, timeout=None)
+        except serial.serialutil.SerialException:
+            print("No Window information")
+            return
 
         door_close_cnt = 0
         while True:
@@ -139,13 +144,14 @@ class Scanner():
                 break
 
 if __name__ == '__main__':
-    if len(sys.argv) == 4:
-        conditioner = sys.argv[1]
-        ventilation = sys.argv[2]
-        fan = sys.argv[3]
-    else:
-        print("usage: sudo python serial_upload.py conditioner ventilation fan")
-        exit(0)
+    parser = argparse.ArgumentParser(description='sudo python co2_upload.py (conditioner) (ventilation) (fan)')
+
+    parser.add_argument('-c', '--conditioner', required=False, default='on', help='conditioner state')
+    parser.add_argument('-v', '--ventilation', required=False, default='on', help='ventilation state')
+    parser.add_argument('-fan', '--fan', required=False, default='on', help='fan state')
+
+    args = parser.parse_args()
+
     print("Press q and ENTER to stop")
     pl = Scanner()
 
@@ -157,6 +163,6 @@ if __name__ == '__main__':
     th_window.start()
 
     try:
-        pl.run(conditioner, ventilation, fan)
+        pl.run(args.conditioner, args.ventilation, args.fan)
     except KeyboardInterrupt:
         print("Press q and ENTER to stop")
