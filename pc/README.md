@@ -73,3 +73,7 @@ Default output format [None]: json
 5. ブレッドボードから出ている5Vのジャンパー線をRaspberry Piの5V(2もしくは4)に刺し、GNDのジャンパー線をRaspberry PiのGND(6)に刺す。ピン配置は[コチラ](https://ymt-lab.com/post/2021/raspberrypi-pin-assugnment/)
 7. Raspberry Pi から Arduinoの[シリアルポート名を確認](https://algorithm.joho.info/programming/python/raspberrypi3-arduino-dmesg-port/)する(ttyACM0 など)
 8. co2_upload.py プログラム内の `SERIAL_DEVICE2_NAME` を上記のシリアルポート名に書き換える(`SERIAL_DEVICE2_NAME = "/dev/ttyACM0"` など)
+
+### 使い方
+セットアップが完了したら、Raspberry Pi上でco2_upload.pyプログラムを実行すると、Arduinoからのデータが標準出力に表示される。
+データを取得し終えたら、「q」を押すことでデータがAWSにアップロードされてプログラムが終了する。*「q」を押さないとデータはAWSにアップロードされないため注意!!*
