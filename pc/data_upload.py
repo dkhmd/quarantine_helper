@@ -8,7 +8,7 @@ import boto3
 import matplotlib.pyplot as plt
 import serial
 
-SERIAL_DEVICE_NAME = "/dev/tty.usbmodem1141401"
+SERIAL_DEVICE_NAME = "/dev/tty.usbmodem1141301"
 class Plotter():
     def __init__(self, label, samples):
         self.initial_flag = True

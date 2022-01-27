@@ -31,7 +31,7 @@
 
 #define PORT_EMG0                   A0
 #define PORT_EMG1                   A1
-#define PORT_BUZZER                 D9
+#define PORT_BUZZER                 D12
 
 
 /*** Name Space ***/
