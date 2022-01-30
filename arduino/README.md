@@ -16,6 +16,7 @@
 * ArduinoBLE
 * Arduino_LSM9DS1
 * arduinoFFT
+* Arduino_APDS9960
 
 # ボードセットアップ
 Arduino nano BLE 33 SENSE のピン配は[こちら](https://content.arduino.cc/assets/Pinout-NANOble_latest.pdf?_gl=1*hhy82y*_ga*NzcxNDEyMzExLjE2MzIyOTM1MTM.*_ga_SELSHHP7SG*MTYzNDcwNzIzMi42LjEuMTYzNDcwNzIzMi4w)なり、EMGセンサーのデータシートは[こちら](https://cdn.sparkfun.com/datasheets/Sensors/Biometric/MyowareUserManualAT-04-001.pdf)となる。  
